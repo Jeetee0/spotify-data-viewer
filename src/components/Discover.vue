@@ -70,15 +70,15 @@
             <label style="font-weight: bold" for="limit">Limit:</label>
             <input class="parameter-input" v-model="limit" id="limit" type="number" min="1" max="100"
                    @input="handleLimitInput('limit', 1, 100)"/>
-            <p>Select the amount of recommended tracks for the response (1-100):</p>
+            <p style="font-size: 12px; width: 225px; margin-top: 4px;">Select the amount of recommended tracks for the response (1-100):</p>
           </div>
           <div class="single-parameter-div">
             <label for="market" style="font-weight: bold">Market:</label>
             <input class="parameter-input" v-model="market" id="market" type="text"/>
-            <p>You can specify a market with an 'ISO 3166-1 alpha-2' country code (eg. DE, EN, IN etc.):</p>
+            <p style="font-size: 12px; width: 225px;">You can specify a market with an 'ISO 3166-1 alpha-2' country code (eg. DE, EN, IN etc.):</p>
           </div>
         </div>
-        <div id="optional-2-div" style="margin-left: 35px; display: flex; flex-direction: column">
+        <div id="optional-2-div" style="margin-left: 5px; display: flex; flex-direction: column">
           <div class="single-parameter-div">
             <label for="min_popularity">Min Popularity:</label>
             <input class="parameter-input" v-model="min_popularity" id="min_popularity" type="number" min="0" max="100"
@@ -123,7 +123,7 @@
 
     <div id="results-div">
       <h2 style="font-weight: bold">Results</h2>
-      <track-arrangement-view :tracks="this.recommendedTracks" :addToPlaylistButtons="true" @play-track="playTrack"></track-arrangement-view>
+      <track-arrangement-view :tracks="this.recommendedTracks" :discoverMode="true" @play-track="playTrack"></track-arrangement-view>
 
 
     </div>
@@ -233,18 +233,14 @@ export default {
         console.log("adding market")
       }
 
-
       // fine tune
       const parameterList = ['min_popularity', 'max_popularity', 'target_popularity', 'min_tempo', 'max_tempo', 'target_tempo']
       for (const index in parameterList) {
         const name = parameterList[index]
         if (this[name] === null || this[name] === undefined || this[name] === "") {
-          console.log(`skipping ${name}`)
           continue;
         }
         params.append(name, this[name]);
-        console.log(`adding '${name}'`);
-
       }
 
 
@@ -290,7 +286,7 @@ export default {
 
       this.disableSeedInputs = false;
 
-      this.limit = 5;
+      this.limit = 20;
       this.market = "";
       this.min_popularity = null;
       this.max_popularity = null;
@@ -395,7 +391,7 @@ export default {
   display: flex;
   flex-direction: column;
   margin-top: 15px;
-  padding-right: 80px;
+  padding-right: 15px;
   padding-left: 15px;
   margin-bottom: 15px;
 }
