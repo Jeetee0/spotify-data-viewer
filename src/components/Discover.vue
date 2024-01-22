@@ -13,21 +13,24 @@
         <div style="display: flex; flex-direction: row; margin-top: 10px">
           <div id="seed-selection-div">
             <label for="genreSelect">Select genre:</label>
+            <input v-model="genreFilter" placeholder="Type to filter genres" />
             <select v-model="genreSelected" id="genreSelect" name="genre" :disabled="disableSeedInputs"
-                    style="height: 40px; width: 250px; resize: none">
-              <option v-for="genreName in genres" :key="genreName" :value="genreName">{{ genreName }}</option>
+                    style="height: 30px; width: 250px; resize: none">
+              <option v-for="genreName in filteredGenres" :key="genreName" :value="genreName">{{ genreName }}</option>
             </select>
 
             <label for="artistSelect" style="margin-top: 6px">Select artist:</label>
+            <input v-model="artistFilter" placeholder="Type to filter artists" />
             <select v-model="artistSelected" id="artistSelect" name="artist" :disabled="disableSeedInputs"
                     style="height: 40px; width: 250px; resize: none">
-              <option v-for="artist in artists" :key="artist.id" :value="artist">{{ artist.name }}</option>
+              <option v-for="artist in filteredArtists" :key="artist.id" :value="artist">{{ artist.name }}</option>
             </select>
 
             <label for="trackSelect" style="margin-top: 6px">Select track:</label>
+            <input v-model="trackFilter" placeholder="Type to filter tracks" />
             <select v-model="trackSelected" id="trackSelect" name="track" :disabled="disableSeedInputs"
                     style="height: 40px; width: 250px; resize: none">
-              <option v-for="track in tracks" :key="track.id" :value="track">
+              <option v-for="track in filteredTracks" :key="track.id" :value="track">
 <!--                <span>{{ track.name }}</span> - <span style="text-align: right">{{ track.b }}</span>-->
                 {{ track.name }} -
                 {{ track.artists.map(artist => artist.name).join(', ') }}
@@ -36,16 +39,16 @@
           </div>
           <div id="seeds-chosen-div">
             <label for="chosenGenres">Selected genres:</label>
-            <div style="display: flex; flex-direction: row; margin-bottom: 6px">
-              <textarea rows="1" cols="1" style="height: 40px; width: 250px; resize: none" v-model="chosenGenres"
+            <div style="display: flex; flex-direction: row; margin-bottom: 20px">
+              <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 250px; resize: none" v-model="chosenGenres"
                         id="chosenGenres"/>
               <button @click="resetChosenGenres" style="margin-left: 15px; width: 70px; font-weight: bold">Reset
               </button>
             </div>
 
             <label for="chosenArtists">Selected artists:</label>
-            <div style="display: flex; flex-direction: row; margin-bottom: 6px">
-              <textarea rows="1" cols="1" style="height: 40px; width: 250px; resize: none" v-model="chosenArtists[1]"
+            <div style="display: flex; flex-direction: row; margin-bottom: 28px">
+              <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 250px; resize: none" v-model="chosenArtists[1]"
                         id="chosenArtists"/>
               <button @click="resetChosenArtists" style="margin-left: 15px; width: 70px; font-weight: bold">Reset
               </button>
@@ -53,7 +56,7 @@
 
             <label for="chosenTracks">Selected tracks:</label>
             <div style="display: flex; flex-direction: row;">
-              <textarea rows="1" cols="1" style="height: 40px; width: 250px; resize: none" v-model="chosenTracks[1]"
+              <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 250px; resize: none" v-model="chosenTracks[1]"
                         id="chosenTracks"/>
               <button @click="resetChosenTracks" style="margin-left: 15px; width: 70px; font-weight: bold">Reset
               </button>
@@ -146,8 +149,11 @@ export default {
       tracks: {},
 
       genreSelected: "",
+      genreFilter: "",
       artistSelected: "",
+      artistFilter: "",
       trackSelected: "",
+      trackFilter: "",
 
       chosenGenres: "",
       chosenGenresCounter: 0,
@@ -182,9 +188,27 @@ export default {
 
     this.playTrack('6desWeNyiLDZu3lKhckawg');
   },
+  computed: {
+    filteredGenres() {
+      if (this.genreFilter === "")
+        return this.genres;
+      return this.genres.filter(genre => genre.toLowerCase().includes(this.genreFilter.toLowerCase()));
+    },
+    filteredArtists() {
+      if (this.artistFilter === "")
+        return this.artists;
+      return this.artists.filter(artist => artist.name.toLowerCase().includes(this.artistFilter.toLowerCase()));
+    },
+    filteredTracks() {
+      if (this.trackFilter === "")
+        return this.tracks;
+      return this.tracks.filter(track => track.name.toLowerCase().includes(this.trackFilter.toLowerCase()) || 
+      track.artists.map(artist => artist.name).join(', ').toLowerCase().includes(this.trackFilter.toLowerCase()));
+      
+    },
+  },
   methods: {
     playTrack(trackId) {
-      console.log("playing track")
       const spotifyPlayerContainer = this.$refs.spotifyPlayer;
       spotifyPlayerContainer.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${trackId}" width="600" height="180" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
     },
@@ -242,7 +266,6 @@ export default {
         }
         params.append(name, this[name]);
       }
-
 
       // request
       const fullUrl = `${baseUrl}?${params.toString()}`;
