@@ -7,11 +7,11 @@
       <img v-if="discoverMode" class="track-image" :src="track.image_url" @click="playTrack(track.id)" alt="Album Cover" style="height: 150px; width: 150px; border-radius: 15px; margin-bottom: 8px;" @mouseover="handleTrackMouseOver" @mouseout="handleTrackMouseOut">
       <div v-if="discoverMode" style="display: flex; justify-content: center; margin-bottom: 5px;">
         <button @click="addToPlaylist1(track.id)" style="font-size: 10px; display: flex; align-items: center; ">
-          <img src="./icons/plus.png" alt="+" style="width: 10px; height: 10px; margin-right: 5px;" />
+          <img src="../icons/plus.png" alt="+" style="width: 10px; height: 10px; margin-right: 5px;" />
           uptempo
         </button>
         <button @click="addToPlaylist2(track.id)" style="font-size: 10px; display: flex; align-items: center; margin-left: 5px">
-          <img src="./icons/plus.png" alt="+" style="width: 10px; height: 10px; margin-right: 5px;" />
+          <img src="../icons/plus.png" alt="+" style="width: 10px; height: 10px; margin-right: 5px;" />
           downtempo
         </button>
       </div>
@@ -81,7 +81,8 @@ export default {
   max-width: 2000px;
 }
 .track-div {
-  flex: 0 0 calc(9.5% - 5px); /* Adjust the width as needed*/
+  /*flex: 0 0 calc(9.5% - 5px); /* Adjust the width as needed*/
+  width: 170px;
   box-sizing: border-box;
   margin: 5px;
   text-align: center;

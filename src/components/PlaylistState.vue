@@ -1,11 +1,13 @@
 <template>
-  <div style="color: black; margin-left: 15px">
-    <h1>{{ title }}</h1>
-    <div style="display: flex; flex-direction: row; align-content: center; ">
-      <p style="font-size: 14px">Choose latest state:</p>
-      <input type="number" id="quantity" v-model="stateAmount" min="1" max="10" width="100px" style="margin-bottom: 15px; max-width: 50px; margin-left: 20px">
+  <div style="color: black;">
+    <div id="info-selector-div">
+      <h1>{{ title }}</h1>
+      <div style="display: flex; flex-direction: row; align-content: center; ">
+        <p>Choose latest state:</p>
+        <input type="number" id="quantity" v-model="stateAmount" min="1" max="10" width="100px" style="margin: 5px 15px; max-width: 50px;">
+      </div>
+      <p>Showing last 10 tracks added to playlist</p>
     </div>
-
     <div id="playlist-view-div">
       <playlist-view :data="playlistData" :renderExtendedDiv="true" @open-playlist-detail-component="openPlaylistDetail"/>
     </div>
@@ -13,7 +15,7 @@
 </template>
 
 <script>
-import PlaylistView from "@/components/TrackView.vue";
+import PlaylistView from "@/components/Arrangements/PlaylistArrangementView.vue";
 
 export default {
   components: {PlaylistView},
@@ -82,8 +84,11 @@ export default {
 </script>
 
 <style scoped>
+#info-selector-div {
+  margin: 5px 15px;
+}
+
 #playlist-view-div {
-  width: 100%;
   border-top-style: solid;
   border-width: 2px;
   border-color: #2c3e50;

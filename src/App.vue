@@ -8,7 +8,7 @@
       <img src="./assets/KELogo.png" alt="KE Logo" style="height: 50px; width: 50px; border-radius: 15px; margin-right: 15px; margin-left: 15px">
     </div>
     <div id="body">
-      <div id="menu-item">
+      <div id="navigation-bar-div">
 
         <button @click="showDiffComponent" :disabled="showDiff">Playlist Diff</button>
         <button @click="showLatestPlaylistState" :disabled="showPlaylistState">Playlist State</button>
@@ -16,18 +16,16 @@
         <button @click="showSpotifyUserData" :disabled="showUserData">Spotify user data</button>
         <button @click="showArtistAndGenreComponent" :disabled="showArtistAndGenre">Artist & Genre</button>
         <button @click="showDiscoverComponent" :disabled="showDiscover">Discover</button>
-        <div style="min-height: 25px"></div>
-        <button @click="exportSpotifyState" :disabled="disabledExport">Export current State</button>
+        <button @click="exportSpotifyState" :disabled="disabledExport" style="position: absolute; bottom: 0; margin: 15px 5px">Export current State</button>
       </div>
-      <div id="main-content">
+      <main>
         <DiffState v-if="showDiff" @open-playlist-detail-component-in-app="showPlaylistDetailComponent"></DiffState>
         <PlaylistState v-if="showPlaylistState" @open-playlist-detail-component-in-app="showPlaylistDetailComponent"></PlaylistState>
         <UserData v-if="showUserData"></UserData>
         <PlaylistDetail v-if="showPlaylistDetail" :playlistIdInit=this.selectedPlaylistId></PlaylistDetail>
         <ArtistAndGenre v-if="showArtistAndGenre"></ArtistAndGenre>
         <Discover v-if="showDiscover"></Discover>
-
-      </div>
+      </main>
     </div>
   </div>
 
@@ -141,44 +139,53 @@ export default {
 
 <style scoped>
 #wrapper {
-  height: 100%;
-  width: 100%;
   display: flex;
   flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 #header {
-  width: 100%;
   display: flex;
+  height: 100px;
   justify-content: center;
   align-items: center;
   color: black;
-  padding-bottom: 15px;
-  padding-top: 15px;
+  padding: 15px 0;
 
   border-bottom-style: solid;
   border-width: 2px;
   border-color: #2c3e50;
 }
 #body {
-  height: 90%;
-  min-height: 600px;
-  width: 100%;
+  flex: 1;
   display: flex;
   flex-direction: row;
-  margin: 10px 10px;
+  overflow: hidden;
 }
-#main-content {
-  margin: 0 10px;
-  width: 100%;
+
+#navigation-bar-div {
+  width: 240px;
+  padding: 10px 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+main {
+  flex: 1;
+  overflow-y: auto;
+
   border-left-style: solid;
   border-width: 2px;
   border-color: #2c3e50;
 }
 button {
   height: 50px;
-  width: 250px;
+  width: 200px;
   font-size: 18px;
   display: block;
-  margin: 5px 5px;
+  margin: 6px 5px;
 }
 </style>

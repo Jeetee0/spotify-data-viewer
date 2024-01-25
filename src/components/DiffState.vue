@@ -1,18 +1,19 @@
 <template>
-  <div style="color: black; margin-left: 15px">
-    <h1>{{ title }}</h1>
-    <div style="display: flex; flex-direction: row; align-content: center; ">
-      <p style="font-size: 14px">Amount of latest states combined:</p>
-      <input type="number" id="quantity" v-model="diffAmount" min="1" max="10" width="100px" style="max-width: 50px; margin-left: 20px">
+  <div style="color: black;">
+    <div style="padding: 5px 15px;">
+      <h1>{{ title }}</h1>
+      <div style="display: flex; flex-direction: row; align-content: center; ">
+        <p style="font-size: 14px">Amount of latest states combined:</p>
+        <input type="number" id="quantity" v-model="diffAmount" min="1" max="10" width="100px" style="max-width: 50px; margin-left: 20px">
+      </div>
     </div>
-    <div>
-      <playlist-view :data="playlistData" :renderExtendedDiv="false" @open-playlist-detail-component="openPlaylistDetail"/>
-    </div>
+    <div class="bottom-line-div"></div>
+    <playlist-view :data="playlistData" :renderExtendedDiv="false" @open-playlist-detail-component="openPlaylistDetail"/>
   </div>
 </template>
 
 <script>
-import PlaylistView from "@/components/TrackView.vue";
+import PlaylistView from "@/components/Arrangements/PlaylistArrangementView.vue";
 
 export default {
   components: {
@@ -102,5 +103,10 @@ export default {
 </script>
 
 <style scoped>
-
+.bottom-line-div {
+  padding: 5px 0px;
+  border-bottom-style: solid; 
+  border-width: 2px; 
+  border-color: #2c3e50; 
+}
 </style>

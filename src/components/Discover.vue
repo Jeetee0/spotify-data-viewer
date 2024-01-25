@@ -1,5 +1,5 @@
 <template>
-  <div style="color: black; margin-left: 15px;">
+  <div style="color: black;">
     <div id="header-div">
       <h1>Discover new tracks through spotify recommendations</h1>
       <a href="https://developer.spotify.com/documentation/web-api/reference/get-recommendations" target="_blank">More
@@ -10,7 +10,7 @@
       <div id="seed-div">
         <h2 style="font-weight: bold;">Select seeds</h2>
         <p>You can select up to five seeds from the three categories (genres, artists and tracks):</p>
-        <div style="display: flex; flex-direction: row; margin-top: 10px">
+        <div style="display: flex; flex-direction: row; padding-top: 10px">
           <div id="seed-selection-div">
             <label for="genreSelect">Select genre:</label>
             <input v-model="genreFilter" placeholder="Type to filter genres" />
@@ -19,17 +19,17 @@
               <option v-for="genreName in filteredGenres" :key="genreName" :value="genreName">{{ genreName }}</option>
             </select>
 
-            <label for="artistSelect" style="margin-top: 6px">Select artist:</label>
+            <label for="artistSelect" style="padding-top: 6px">Select artist:</label>
             <input v-model="artistFilter" placeholder="Type to filter artists" />
             <select v-model="artistSelected" id="artistSelect" name="artist" :disabled="disableSeedInputs"
-                    style="height: 40px; width: 250px; resize: none">
+                    style="height: 30px; width: 250px; resize: none">
               <option v-for="artist in filteredArtists" :key="artist.id" :value="artist">{{ artist.name }}</option>
             </select>
 
-            <label for="trackSelect" style="margin-top: 6px">Select track:</label>
+            <label for="trackSelect" style="padding-top: 6px">Select track:</label>
             <input v-model="trackFilter" placeholder="Type to filter tracks" />
             <select v-model="trackSelected" id="trackSelect" name="track" :disabled="disableSeedInputs"
-                    style="height: 40px; width: 250px; resize: none">
+                    style="height: 30px; width: 250px; resize: none">
               <option v-for="track in filteredTracks" :key="track.id" :value="track">
 <!--                <span>{{ track.name }}</span> - <span style="text-align: right">{{ track.b }}</span>-->
                 {{ track.name }} -
@@ -39,7 +39,7 @@
           </div>
           <div id="seeds-chosen-div">
             <label for="chosenGenres">Selected genres:</label>
-            <div style="display: flex; flex-direction: row; margin-bottom: 20px">
+            <div style="display: flex; flex-direction: row; padding-bottom: 18px">
               <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 250px; resize: none" v-model="chosenGenres"
                         id="chosenGenres"/>
               <button @click="resetChosenGenres" style="margin-left: 15px; width: 70px; font-weight: bold">Reset
@@ -47,7 +47,7 @@
             </div>
 
             <label for="chosenArtists">Selected artists:</label>
-            <div style="display: flex; flex-direction: row; margin-bottom: 28px">
+            <div style="display: flex; flex-direction: row; padding-bottom: 18px">
               <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 250px; resize: none" v-model="chosenArtists[1]"
                         id="chosenArtists"/>
               <button @click="resetChosenArtists" style="margin-left: 15px; width: 70px; font-weight: bold">Reset
@@ -112,20 +112,23 @@
         </div>
       </div>
     </div>
-    <div style="display: flex; flex-direction: row; align-items: center;">
-      <button
-          style="margin-right: 30px; font-size: 22px; height: 50px; width: 300px"
-          @click="requestRecommendations">Request recommendations
+    <div style="display: flex; flex-direction: row; align-items: center; height: 200px;">
+      <div style="display: flex; flex-direction: column; margin: 0px 60px;">
+        <button
+          style="font-size: 22px; height: 50px; width: 200px"
+          @click="requestRecommendations">Find tracks
       </button>
       <button
-          style="font-size: 22px; height: 50px; width: 200px"
+          style="font-size: 16px; margin-top: 10px; height: 28px; width: 200px"
           @click="resetAllParameters">Reset all
       </button>
-      <div ref="spotifyPlayer" style="margin-top: 30px;margin-left: 30px; "></div>
+      </div>
+
+      <div ref="spotifyPlayer" style="margin-top: 25px; margin-bottom: 20px;"></div>
     </div>
 
     <div id="results-div">
-      <h2 style="font-weight: bold">Results</h2>
+      <h2 style="font-weight: bold; padding-bottom: 10px;">Results</h2>
       <track-arrangement-view :tracks="this.recommendedTracks" :discoverMode="true" @play-track="playTrack"></track-arrangement-view>
 
 
@@ -136,7 +139,7 @@
 </template>
 
 <script>
-import TrackArrangementView from "@/components/TrackArrangementView.vue";
+import TrackArrangementView from "@/components/Arrangements/TrackArrangementView.vue";
 
 export default {
   components: {
@@ -210,7 +213,7 @@ export default {
   methods: {
     playTrack(trackId) {
       const spotifyPlayerContainer = this.$refs.spotifyPlayer;
-      spotifyPlayerContainer.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${trackId}" width="600" height="180" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
+      spotifyPlayerContainer.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${trackId}" width="600" height="155" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
     },
     removeUnnecessaryChars(input) {
       input = input.trimEnd()
@@ -394,7 +397,7 @@ export default {
 
 <style>
 #header-div {
-  padding-bottom: 15px;
+  padding: 10px 15px;
   border-bottom-style: solid;
   border-width: 2px;
   border-color: #2c3e50;
@@ -403,7 +406,6 @@ export default {
 #prepare-request-div {
   display: flex;
   flex-direction: row;
-  padding-bottom: 15px;
 
   border-bottom-style: solid;
   border-width: 2px;
@@ -413,10 +415,7 @@ export default {
 #seed-div {
   display: flex;
   flex-direction: column;
-  margin-top: 15px;
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-bottom: 15px;
+  padding: 10px 15px;
 }
 
 #seed-selection-div {
@@ -436,8 +435,7 @@ export default {
 #optional-parameter-div {
   display: flex;
   flex-direction: row;
-  margin-top: 15px;
-  padding-left: 25px;
+  padding: 10px 15px;
 
   border-left-style: solid;
   border-width: 2px;
@@ -447,16 +445,14 @@ export default {
 .single-parameter-div {
   display: flex;
   flex-direction: column;
-  width: 300px;
 
-  margin-top: 5px;
-  margin-bottom: 15px;
+  padding: 5px 5px;
 }
 
 #results-div {
   min-height: 800px;
 
-  padding-top: 15px;
+  padding: 10px 15px;
   border-top-style: solid;
   border-width: 2px;
   border-color: #2c3e50;

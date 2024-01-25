@@ -1,56 +1,52 @@
 <template>
   <div id="container">
-    <h1>Check your artist ({{ Object.keys(artists).length }})</h1>
-    <div style="margin-bottom: 10px; padding-bottom: 10px; border-bottom-style: solid; border-width: 2px; border-color: #2c3e50;">
-      <select v-model="chosenArtist" id="artistSelect" name="artist">
+    <div id="artist-view-div">
+      <h1>Get artist info </h1>
+      <h4>Select an artist ({{ Object.keys(artists).length }}):</h4>
+      <select v-model="chosenArtist" id="artistSelect" name="artist" style="width: 225px">
         <option v-for="artist in artists" :key="artist.id" :value="artist">{{ artist.name }}</option>
       </select>
       <br>
-      <div v-if="showSingleArtist" style="margin: 15px">
+      <div v-if="showSingleArtist" style="padding-top: 15px">
         <a :href="selectedArtist.spotify_url" target="_blank"><img :src="selectedArtist.image_url" alt="Album Cover"
                                                                    style="height: 150px; width: 150px; border-radius: 15px"></a>
         <h2 style="font-weight: bold">{{ selectedArtist.name }}</h2>
         <p><span style="font-weight: bold;">Popularity:</span> {{ selectedArtist.popularity }} / 100</p>
         <p><span style="font-weight: bold;">Followers:</span> {{ (selectedArtist.followers).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }}</p>
         <p><span style="font-weight: bold;">Genres:</span> {{ selectedArtist.genres }}</p>
+        <p><span style="font-weight: bold;">ID: </span>{{ selectedArtist.id }}</p>
       </div>
 
     </div>
-
-    <h1>Find artists by genre</h1>
-    <div id="genre-selector-div">
-      <h4>Select a spotify genre ({{ genres.length }}):</h4>
-      <select v-model="selectedGenre" id="genreSelect" name="genre">
-        <option v-for="genre in genres" :key="genre" :value="genre">{{ genre }}</option>
-      </select>
-    </div>
-    <div>
-      <div id="artist-arrangement-div">
-        <div class="artist-div" v-for="artist in this.artistsForGenre" :key="artist.id">
-
-          <a :href="artist.spotify_url" target="_blank"><img :src="artist.image_url" alt="Album Cover"
-                                                             style="height: 150px; width: 150px; border-radius: 15px"></a>
-          <h2 style="font-weight: bold">{{ artist.name }}</h2>
-          <p><span style="font-weight: bold;">Popularity:</span> {{ artist.popularity }}/100</p>
-          <p><span style="font-weight: bold;">Followers:</span> {{ (artist.followers).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }}</p>
-          <p><span style="font-weight: bold; font-size: 10px">ID:</span> {{ artist.id }}</p>
-        </div>
+    <div id="genre-view-div">
+      <h1>Find artists by genre</h1>
+      <div id="genre-selector-div" style="padding-bottom: 15px;">
+        <h4>Select a spotify genre ({{ genres.length }}):</h4>
+        <input v-model="genreFilter" placeholder="Type to filter genre" /><br>
+        <select v-model="selectedGenre" id="genreSelect" name="genre" style="width: 250px;">
+          <option v-for="genre in filteredGenres" :key="genre" :value="genre">{{ genre }}</option>
+        </select>
       </div>
+      <artist-arrangement-view :artistsForGenre="this.artistsForGenre"></artist-arrangement-view>
     </div>
+
+
   </div>
 
 </template>
 
 <script>
+import ArtistArrangementView from "@/components/Arrangements/ArtistArrangementView.vue";
 
 export default {
-  components: {},
+  components: {ArtistArrangementView},
   data() {
     return {
       artists: [],
       genres: [],
       artistsForGenre: [],
       selectedGenre: "",
+      genreFilter: "",
 
       showSingleArtist: false,
       chosenArtist: null,
@@ -63,6 +59,13 @@ export default {
     this.genres = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/genres`)
     this.artists = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/artists`)
 
+  },
+  computed: {
+    filteredGenres() {
+      if (this.genreFilter === "")
+        return this.genres;
+      return this.genres.filter(genre => genre.toLowerCase().includes(this.genreFilter.toLowerCase()));
+    },
   },
   watch: {
     selectedGenre(newValue) {
@@ -80,6 +83,9 @@ export default {
     },
   },
   methods: {
+    selectArtist(selectedArtist) {
+      this.chosenArtist = selectedArtist;
+    },
     async getArtistsForGenre(genre) {
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
@@ -112,18 +118,20 @@ export default {
 <style scoped>
 #container {
   color: black;
-  margin-left: 15px;
-  width: 100%;
 }
 
-#genre-selector-div {
-  width: 100%;
-
-  margin-bottom: 10px;
-  padding-bottom: 10px;
-
-  border-bottom-style: solid;
-  border-width: 2px;
+#artist-view-div {
+  padding: 10px 15px;
+  
+  border-bottom-style: solid; 
+  border-width: 2px; 
+  border-color: #2c3e50;
+}
+#genre-view-div {
+  padding: 10px 15px;
+  
+  border-bottom-style: solid; 
+  border-width: 2px; 
   border-color: #2c3e50;
 }
 
@@ -131,17 +139,25 @@ export default {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  width: 100%;
-  max-width: 2000px;
-
-  margin-top: 10px;
 }
 
 .artist-div {
-  flex: 0 0 calc(9.5% - 5px); /* Adjust the width as needed*/
+  width: 170px;
   box-sizing: border-box;
   margin: 5px;
   text-align: center;
   font-size: 12px;
+}
+
+.artist-image {
+  transition: transform 0.3s ease-in-out;
+  height: 150px; 
+  width: 150px; 
+  border-radius: 15px
+}
+
+.artist-image:hover {
+    transform: scale(1.15);
+    z-index: 1;
 }
 </style>

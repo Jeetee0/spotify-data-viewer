@@ -1,20 +1,22 @@
 <template>
-  <div class="playlist-detail" style="color: black; margin-left: 15px">
+  <div class="playlist-detail" style="color: black;">
     <div id="info-selector-div">
       <h1>{{ title }}</h1>
       <label for="playlistId" style="margin-right: 15px">Spotify playlist ID:</label>
       <input v-model="playlistId" id="playlistId" placeholder="Enter playlist ID" style="margin-right: 15px; min-width: 220px"/>
-      <button @click="fetchPlaylistData" style="margin-bottom: 15px">Fetch Playlist</button>
+      <button @click="fetchPlaylistData">Fetch Playlist</button>
     </div>
+    <div class="bottom-line-div"></div>
 
     <div v-if="playlist">
-      <h2 style="font-weight: bold">Playlist '{{ playlist.name }}'</h2>
-      <div id="playlist-overview-div">
-        <div style="margin: 10px; ">
+      <div id="playlist-overview-div" style="padding: 5px 15px">
+        <h2 style="font-weight: bold">Playlist '{{ playlist.name }}'</h2>
+        <div id="columns-div">
+          <div style="padding: 10px">
           <a :href="playlist.spotify_url" target="_blank"><img :src="playlist.image_url" alt="Playlist Cover"
                                                                style="height: 200px; width: 200px; border-radius: 15px"></a>
         </div>
-        <div style="margin: 10px; max-width: 400px">
+        <div style="padding: 10px; max-width: 400px">
           <p><span style="font-weight: bold;">Owner:</span> {{ playlist.owner_id }}</p>
           <p><span style="font-weight: bold;">Number of Tracks:</span> {{ playlist.amount_of_tracks }}</p>
           <p><span style="font-weight: bold;">Folder:</span> {{ playlist.folder }}</p>
@@ -22,7 +24,7 @@
           <p><span style="font-weight: bold;">Unique Genres:</span> {{ playlist.genre_classification.unique_genres }}</p>
           <p><span style="font-weight: bold;">Description:</span> {{ playlist.description }}</p>
         </div>
-        <div style="margin: 10px;">
+        <div style="padding: 10px;">
           <h2>Genre Classification</h2>
           <ol class="bold-numbering">
             <li v-for="(count, genre) in Object.fromEntries(Object.entries(playlist.genre_classification.genres).slice(0, 5))"
@@ -31,7 +33,7 @@
             </li>
           </ol>
         </div>
-        <div style="margin: 10px">
+        <div style="padding: 10px">
           <h2>Top Artists</h2>
           <ol class="bold-numbering">
             <li v-for="(artist, id) in Object.fromEntries(Object.entries(playlist.genre_classification.artists).slice(0, 5))"
@@ -40,24 +42,22 @@
             </li>
           </ol>
         </div>
+        </div>
+
       </div>
-
-
     </div>
-    <div>
-      <h2 style="font-weight: bold">Tracks</h2>
+    <div class="bottom-line-div"></div>
+    <div style="padding: 5px 15px;">
+      <h2 style="font-weight: bold; padding-bottom: 5px;">Tracks</h2>
       <track-arrangement-view :tracks="this.trackList"></track-arrangement-view>
-
     </div>
-
-    <!-- Display an error message if there is an issue with the fetch -->
     <p v-if="error">{{ error }}</p>
   </div>
 </template>
 
 <script>
-import PlaylistView from "@/components/TrackView.vue";
-import TrackArrangementView from "@/components/TrackArrangementView.vue";
+import PlaylistView from "@/components/Arrangements/PlaylistArrangementView.vue";
+import TrackArrangementView from "@/components/Arrangements/TrackArrangementView.vue";
 
 export default {
   components: {
@@ -80,16 +80,18 @@ export default {
     };
   },
   async created() {
-    if (this.playlistIdInit !== "") {
+    this.playlistId = "";
+    if (typeof this.playlistIdInit === 'string' && this.playlistIdInit !== "") {
       this.playlistId = this.playlistIdInit
       this.fetchPlaylistData()
     }
-
   },
   methods: {
     async fetchPlaylistData() {
       this.playlist = null;
       this.error = null;
+      if (this.playlistId === "")
+        return;
 
       try {
         const backendHost = import.meta.env.VITE_BACKEND_HOST;
@@ -144,20 +146,19 @@ export default {
 
 <style scoped>
 #info-selector-div {
-  margin-bottom: 15px;
-  border-bottom-style: solid;
-  border-width: 2px;
-  border-color: #2c3e50;
+  margin: 15px 15px;
 }
 
-#playlist-overview-div {
+#columns-div {
   display: flex;
   flex-direction: row;
+}
 
-  margin-bottom: 15px;
-  border-bottom-style: solid;
-  border-width: 2px;
-  border-color: #2c3e50;
+.bottom-line-div {
+  border-bottom-style: solid; 
+  border-width: 2px; 
+  border-color: #2c3e50; 
+  margin: 0px 0px
 }
 
 .bold-numbering {
