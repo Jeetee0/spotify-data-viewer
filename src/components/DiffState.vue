@@ -8,16 +8,16 @@
       </div>
     </div>
     <div class="bottom-line-div"></div>
-    <playlist-view :data="playlistData" :renderExtendedDiv="false" @open-playlist-detail-component="openPlaylistDetail"/>
+    <playlist-arrangement-view :playlists="playlistData" :folderName="'diff'" :renderExtendedDiv="false" @open-playlist-detail-component="openPlaylistDetail"/>
   </div>
 </template>
 
 <script>
-import PlaylistView from "@/components/Arrangements/PlaylistArrangementView.vue";
+import PlaylistArrangementView from "@/components/Arrangements/PlaylistArrangementView.vue";
 
 export default {
   components: {
-    PlaylistView
+    PlaylistArrangementView
   },
   data() {
     return {

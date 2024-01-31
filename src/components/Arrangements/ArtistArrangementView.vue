@@ -10,11 +10,14 @@
 </template>
 
 <script>
-
-
 export default {
     props: {
     artists: Object,
+  },
+  methods: {
+    selectArtist(artist) {
+      this.$emit('open-artist-view', artist)
+    }
   }
 }
 </script>

@@ -7,15 +7,38 @@
         <option v-for="artist in artists" :key="artist.id" :value="artist">{{ artist.name }}</option>
       </select>
       <br>
-      <div v-if="showSingleArtist" style="padding-top: 15px">
-        <a :href="selectedArtist.spotify_url" target="_blank"><img :src="selectedArtist.image_url" alt="Album Cover"
-                                                                   style="height: 150px; width: 150px; border-radius: 15px"></a>
-        <h2 style="font-weight: bold">{{ selectedArtist.name }}</h2>
-        <p><span style="font-weight: bold;">Popularity:</span> {{ selectedArtist.popularity }} / 100</p>
-        <p><span style="font-weight: bold;">Followers:</span> {{ (selectedArtist.followers).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }}</p>
-        <p><span style="font-weight: bold;">Genres:</span> {{ selectedArtist.genres }}</p>
-        <p><span style="font-weight: bold;">ID: </span>{{ selectedArtist.id }}</p>
+      <div class="row-div" v-if="chosenArtist">
+        <div v-if="showSingleArtist" style="width: 320px">
+          <h2 style="font-weight: bold">{{ selectedArtist.name }}</h2>
+          <a :href="selectedArtist.spotify_url" target="_blank"><img :src="selectedArtist.image_url" alt="Album Cover"
+                                                                   style="height: 200px; width: 200px; border-radius: 15px"></a>
+        
+        <div class="row-div" style="max-width: 220px;">
+          <div>
+              <p style="font-weight: bold;">Popularity:</p>
+              <p style="font-weight: bold;">Followers:</p>
+              <p style="font-weight: bold;">ID:</p>
+              <p style="font-weight: bold;">Genres:</p>
+          </div>
+          <div style="padding-left: 5px;">
+              <p>{{ selectedArtist.popularity }} / 100</p>
+              <p>{{ (selectedArtist.followers).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") }}</p>
+              <p>{{ selectedArtist.id }}</p>
+              <p>{{ selectedArtist.genres }}</p> 
+          </div>
+        </div>
       </div>
+      <div>
+        <h2 style="">Artist Top Tracks</h2>
+        <track-arrangement-view :tracks="Object.fromEntries(Object.entries(artistTracks).slice(0, 5))"></track-arrangement-view>
+        <h2 style="">Similar Artists</h2>
+        <artist-arrangement-view :artists="Object.fromEntries(Object.entries(relatedArtists).slice(0, 5))" @open-artist-view="selectArtist"></artist-arrangement-view>
+      </div>
+      <div>
+        
+      </div>
+      </div>
+      
 
     </div>
     <div id="genre-view-div">
@@ -27,7 +50,12 @@
           <option v-for="genre in filteredGenres" :key="genre" :value="genre">{{ genre }}</option>
         </select>
       </div>
-      <artist-arrangement-view :artistsForGenre="this.artistsForGenre"></artist-arrangement-view>
+
+      <artist-arrangement-view :artists="this.artistsForGenre" @open-artist-view="selectArtist"></artist-arrangement-view>
+    </div>
+    <div>
+      <h1 style="padding: 5px 15px;">Followed artists</h1>
+      <artist-arrangement-view style="padding: 5px 15px;" :artists="this.followedArtists" @open-artist-view="selectArtist"></artist-arrangement-view>
     </div>
 
 
@@ -37,13 +65,18 @@
 
 <script>
 import ArtistArrangementView from "@/components/Arrangements/ArtistArrangementView.vue";
+import TrackArrangementView from '@/components/Arrangements/TrackArrangementView.vue';
 
 export default {
-  components: {ArtistArrangementView},
+  components: {ArtistArrangementView, TrackArrangementView},
   data() {
     return {
       artists: [],
       genres: [],
+      artistTracks: [],
+      relatedArtists: [],
+      followedArtists: [],
+
       artistsForGenre: [],
       selectedGenre: "",
       genreFilter: "",
@@ -51,13 +84,17 @@ export default {
       showSingleArtist: false,
       chosenArtist: null,
       selectedArtist: null,
+
+      backendHost: import.meta.env.VITE_BACKEND_HOST,
+      backendPort: import.meta.env.VITE_BACKEND_PORT,
     };
   },
   async created() {
-    const backendHost = import.meta.env.VITE_BACKEND_HOST;
-    const backendPort = import.meta.env.VITE_BACKEND_PORT;
-    this.genres = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/genres`)
-    this.artists = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/artists`)
+    const response = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/artists_and_genres`)
+    this.genres = response.genres;
+    this.artists = response.artists;
+
+    this.followedArtists = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/followed_artists`)
 
   },
   computed: {
@@ -71,15 +108,20 @@ export default {
     selectedGenre(newValue) {
       this.getArtistsForGenre(newValue);
     },
-    chosenArtist(selectedArtist) {
-      console.log(selectedArtist)
+    async chosenArtist(selectedArtist) {
+      this.artistTracks = [];
+      this.relatedArtists = [];
       if (selectedArtist === null || selectedArtist.name === "") {
         this.showSingleArtist = false;
+        this.selectedArtist = null;
       }
       else {
-        this.getArtist(selectedArtist.name);
+        //const response = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/artist_by_id?artist_id=${selectedArtist.id}`)
+        this.selectedArtist = selectedArtist
+        this.showSingleArtist = true
+        this.artistTracks = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/artist_top_tracks?artist_id=${selectedArtist.id}`)
+        this.relatedArtists = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/related_artists?artist_id=${selectedArtist.id}`)
       }
-
     },
   },
   methods: {
@@ -87,16 +129,7 @@ export default {
       this.chosenArtist = selectedArtist;
     },
     async getArtistsForGenre(genre) {
-      const backendHost = import.meta.env.VITE_BACKEND_HOST;
-      const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      this.artistsForGenre = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/artists_for_genre?genre=${genre}`)
-    },
-    async getArtist(artistName) {
-        const backendHost = import.meta.env.VITE_BACKEND_HOST;
-        const backendPort = import.meta.env.VITE_BACKEND_PORT;
-        const response = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/artists_by_name?names=${artistName}`)
-        this.selectedArtist = response[0]
-        this.showSingleArtist = true
+      this.artistsForGenre = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/artists_for_genre?genre=${genre}`)
     },
     async fetchData(url) {
       try {
@@ -159,5 +192,10 @@ export default {
 .artist-image:hover {
     transform: scale(1.15);
     z-index: 1;
+}
+
+.row-div {
+    display: flex;
+    flex-direction: row;
 }
 </style>

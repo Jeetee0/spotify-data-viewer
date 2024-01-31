@@ -9,16 +9,25 @@
     </div>
     <div id="body">
       <div id="navigation-bar-div">
+        <h3 style="font-weight: bold; padding-left: 6px;">General</h3>
+        <button @click="showArtistAndGenreComponent" :disabled="showArtistAndGenre">Artist & Genre</button>
+        <button @click="showDiscoverComponent" :disabled="showDiscover">Discover</button>
 
+        <div style="height: 50px;"></div>
+
+        <h3 style="font-weight: bold; padding-left: 6px;">KE Spotify Data</h3>
         <button @click="showDiffComponent" :disabled="showDiff">Playlist Diff</button>
         <button @click="showLatestPlaylistState" :disabled="showPlaylistState">Playlist State</button>
         <button @click="showPlaylistDetailComponent" :disabled="showPlaylistDetail">Playlist Detail</button>
         <button @click="showSpotifyUserData" :disabled="showUserData">Spotify user data</button>
-        <button @click="showArtistAndGenreComponent" :disabled="showArtistAndGenre">Artist & Genre</button>
-        <button @click="showDiscoverComponent" :disabled="showDiscover">Discover</button>
+
         <button @click="exportSpotifyState" :disabled="disabledExport" style="position: absolute; bottom: 0; margin: 15px 5px">Export current State</button>
       </div>
       <main>
+        <div v-if="showInfoText" style="color: black; padding: 5px 15px;">
+          <h1 style="font-weight: bold;">Info</h1>
+          <h3 v-html="formattedInfoText"></h3>
+        </div>
         <DiffState v-if="showDiff" @open-playlist-detail-component-in-app="showPlaylistDetailComponent"></DiffState>
         <PlaylistState v-if="showPlaylistState" @open-playlist-detail-component-in-app="showPlaylistDetailComponent"></PlaylistState>
         <UserData v-if="showUserData"></UserData>
@@ -39,12 +48,15 @@ import UserData from "@/components/UserData.vue";
 import PlaylistDetail from "@/components/PlaylistDetail.vue";
 import ArtistAndGenre from "@/components/ArtistAndGenre.vue"
 import Discover from "@/components/Discover.vue"
+import { infoText } from "@/assets/infoText.js";
 
 export default {
   name: "App",
   data() {
     return {
-      showDiff: true,
+      infoTextContent: infoText,
+      showInfoText: true,
+      showDiff: false,
       showPlaylistState: false,
       showUserData: false,
       disabledExport: false,
@@ -64,6 +76,7 @@ export default {
   },
   methods: {
     showDiffComponent() {
+      this.showInfoText = false;
       this.showDiff = true;
       this.showPlaylistState = false;
       this.showUserData = false;
@@ -72,6 +85,7 @@ export default {
       this.showDiscover = false;
     },
     showLatestPlaylistState() {
+      this.showInfoText = false;
       this.showDiff = false;
       this.showPlaylistState = true;
       this.showUserData = false;
@@ -80,6 +94,7 @@ export default {
       this.showDiscover = false;
     },
     showSpotifyUserData() {
+      this.showInfoText = false;
       this.showDiff = false;
       this.showPlaylistState = false;
       this.showUserData = true;
@@ -88,6 +103,7 @@ export default {
       this.showDiscover = false;
     },
     showPlaylistDetailComponent(playlistId="") {
+      this.showInfoText = false;
       this.selectedPlaylistId = playlistId
       this.showDiff = false;
       this.showPlaylistState = false;
@@ -97,6 +113,7 @@ export default {
       this.showDiscover = false;
     },
     showArtistAndGenreComponent() {
+      this.showInfoText = false;
       this.showDiff = false;
       this.showPlaylistState = false;
       this.showUserData = false;
@@ -105,6 +122,7 @@ export default {
       this.showDiscover = false;
     },
     showDiscoverComponent() {
+      this.showInfoText = false;
       this.showDiff = false;
       this.showPlaylistState = false;
       this.showUserData = false;
@@ -133,6 +151,11 @@ export default {
       }
     },
   },
+  computed: {
+    formattedInfoText() {
+      return this.infoTextContent.replace(/\n/g, '<br>');
+    },
+  }
 
 }
 </script>
@@ -167,6 +190,7 @@ export default {
 #navigation-bar-div {
   width: 240px;
   padding: 10px 10px;
+  color: black;
 }
 
 * {

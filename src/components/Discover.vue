@@ -112,7 +112,7 @@
         </div>
       </div>
     </div>
-    <div style="display: flex; flex-direction: row; align-items: center; height: 200px;">
+    <div style="display: flex; flex-direction: row; align-items: center; height: 220px;">
       <div style="display: flex; flex-direction: column; margin: 0px 60px;">
         <button
           style="font-size: 22px; height: 50px; width: 200px"
@@ -125,12 +125,16 @@
       </div>
 
       <div ref="spotifyPlayer" style="margin-top: 25px; margin-bottom: 20px;"></div>
+
+      <div v-if="selectedTrack" id="selected-track-detail-div">
+        <track-features :trackFeatures="this.trackFeatures"></track-features>
+      </div>
     </div>
 
     <div id="results-div">
       <h2 style="font-weight: bold; padding-bottom: 10px;">Results</h2>
       <track-arrangement-view :tracks="this.recommendedTracks" :discoverMode="true" @play-track="playTrack"></track-arrangement-view>
-
+      
 
     </div>
   </div>
@@ -140,16 +144,20 @@
 
 <script>
 import TrackArrangementView from "@/components/Arrangements/TrackArrangementView.vue";
+import TrackFeatures from "./TrackFeatures.vue";
 
 export default {
   components: {
-    TrackArrangementView
+    TrackArrangementView, TrackFeatures
   },
   data() {
     return {
       genres: {},
       artists: {},
       tracks: {},
+
+      selectedTrack: null,
+      trackFeatures: {},
 
       genreSelected: "",
       genreFilter: "",
@@ -185,11 +193,12 @@ export default {
   async created() {
     const backendHost = import.meta.env.VITE_BACKEND_HOST;
     const backendPort = import.meta.env.VITE_BACKEND_PORT;
-    this.artists = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/artists`)
-    this.genres = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/genres`)
+    const response = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/artists_and_genres`)
+    this.genres = response.genres;
+    this.artists = response.artists;
     this.tracks = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/tracks`)
 
-    this.playTrack('6desWeNyiLDZu3lKhckawg');
+    //this.playTrack({'id': '6desWeNyiLDZu3lKhckawg'});
   },
   computed: {
     filteredGenres() {
@@ -211,9 +220,19 @@ export default {
     },
   },
   methods: {
-    playTrack(trackId) {
+    async playTrack(track) {
+      console.log(track)
+
+      const backendHost = import.meta.env.VITE_BACKEND_HOST;
+      const backendPort = import.meta.env.VITE_BACKEND_PORT;
+      const url = `http://${backendHost}:${backendPort}/spotify/track_features?track_id=${track.id}`
+      const response = await this.fetchData(url);
+      this.trackFeatures = response;
+
       const spotifyPlayerContainer = this.$refs.spotifyPlayer;
-      spotifyPlayerContainer.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${trackId}" width="600" height="155" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
+      spotifyPlayerContainer.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${track.id}" width="600" height="155" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
+
+      this.selectedTrack = track;
     },
     removeUnnecessaryChars(input) {
       input = input.trimEnd()
@@ -272,10 +291,7 @@ export default {
 
       // request
       const fullUrl = `${baseUrl}?${params.toString()}`;
-      console.log(fullUrl)
       const response = await this.fetchData(fullUrl)
-      console.log("recommended response")
-      console.log(response)
       if (response['amount_of_tracks'] === 0) {
         alert("No tracks were found")
       } else
@@ -447,6 +463,12 @@ export default {
   flex-direction: column;
 
   padding: 5px 5px;
+}
+
+#selected-track-detail-div {
+  padding: 10px 15px;
+  display: flex;
+  flex-direction: row;
 }
 
 #results-div {

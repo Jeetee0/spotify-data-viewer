@@ -9,16 +9,16 @@
       <p>Showing last 10 tracks added to playlist</p>
     </div>
     <div id="playlist-view-div">
-      <playlist-view :data="playlistData" :renderExtendedDiv="true" @open-playlist-detail-component="openPlaylistDetail"/>
+      <playlist-folder-arrangement :playlistsWithFolders="playlistData" :renderExtendedDiv="true" @open-playlist-detail-component="openPlaylistDetail"/>
     </div>
   </div>
 </template>
 
 <script>
-import PlaylistView from "@/components/Arrangements/PlaylistArrangementView.vue";
+import PlaylistFolderArrangement from "@/components/Arrangements/PlaylistFolderArrangement.vue";
 
 export default {
-  components: {PlaylistView},
+  components: {PlaylistFolderArrangement},
   data() {
     return {
       title: 'Playlist state - Exported playlist state from spotify',
@@ -45,11 +45,15 @@ export default {
       this.playlists = playlists
 
       for (const playlistId in playlists) {
+        const folder = playlists[playlistId]['folder']
+        if (!newPlaylistData.hasOwnProperty(folder)) {
+          newPlaylistData[folder] = {}
+        }
+
         const name = playlists[playlistId]['name']
         const trackString = playlists[playlistId]['track_ids'].join(",")
-        newPlaylistData[name] = await this.getSpotifyTracksByIdList(trackString);
+        newPlaylistData[folder][name] = await this.getSpotifyTracksByIdList(trackString);
       }
-
       this.playlistData = newPlaylistData;
     },
     openPlaylistDetail(playlistName) {

@@ -8,7 +8,7 @@
     </div>
     <div class="bottom-line-div"></div>
 
-    <div v-if="playlist">
+    <div v-if="playlistFound">
       <div id="playlist-overview-div" style="padding: 5px 15px">
         <h2 style="font-weight: bold">Playlist '{{ playlist.name }}'</h2>
         <div id="columns-div">
@@ -46,8 +46,8 @@
 
       </div>
     </div>
-    <div class="bottom-line-div"></div>
-    <div style="padding: 5px 15px;">
+    <div v-if="playlistFound" class="bottom-line-div"></div>
+    <div v-if="playlistFound" style="padding: 5px 15px;">
       <h2 style="font-weight: bold; padding-bottom: 5px;">Tracks</h2>
       <track-arrangement-view :tracks="this.trackList"></track-arrangement-view>
     </div>
@@ -74,6 +74,7 @@ export default {
     return {
       title: 'Playlist Detail View',
       playlistId: "",
+      playlistFound: false,
       playlist: null,
       trackList: null,
       error: null,
@@ -100,7 +101,6 @@ export default {
 
         // Update the component's data with the fetched playlist
         this.playlist = response[0];
-        console.log(this.playlist['track_ids'])
 
         // create track view component
         this.trackList = {};
@@ -111,7 +111,7 @@ export default {
         }
         trackString = trackString.slice(0, -1);
         this.trackList = await this.getSpotifyTracksByIdList(trackString);
-        console.log(this.trackList)
+        this.playlistFound = true;
       } catch (error) {
         // Handle any fetch errors
         this.error = 'Error fetching playlist data. Please check the ID and try again.';

@@ -1,50 +1,102 @@
 <template>
-  <div>
-    <div class="playlist-div" v-for="(tracks, playlistName) in data" :key="playlistName">
-      <div style="padding: 5px 15px;" @click="openPlaylistDetail(playlistName, $event)" @mouseover="handlePlaylistNameMouseOver" @mouseout="handlePlaylistNameMouseOut">
-        <h2 style="font-weight: bold; display: inline-block; text-decoration: underline;">{{ playlistName }}</h2>
-        <img src="../icons/link-icon.png" alt="Link Icon" class="link-icon" style="width: 12px; height: 12px; margin-left: 5px">
+  <div style="border-bottom-style: solid; border-width: 2px; border-color: #2c3e50;">
+    <div v-if="folderName !== 'diff'" style="display: flex; flex-direction: row; padding: 10px 10px;">
+      <h2 style="font-weight: bold;" @click="toggleCollapse" @mouseover="collapseCursor(true)" @mouseout="collapseCursor(false)">{{ folderName }}</h2>
+      <img v-if="!collapsed" @mouseover="collapseCursor(true)" @mouseout="collapseCursor(false)" @click="toggleCollapse" src="../../assets/minimize.png" alt="minimize" style="height: 18px; width: 18px; margin-top: 12px; margin-left: 10px;">
+      <img v-if="collapsed" @mouseover="collapseCursor(true)" @mouseout="collapseCursor(false)" @click="toggleCollapse" src="../../assets/maximize.png" alt="maximize" style="height: 18px; width: 18px; margin-top: 12px; margin-left: 10px">
+    </div>
+      <div class="collapsible-content" v-if="!collapsed" style="padding-left: 15px;">
+        <div class="playlist-div" v-for="(tracks, playlistName) in playlists" :key="playlistName">
+          <div style="padding: 5px 15px;" @click="openPlaylistDetail(playlistName, $event)" @mouseover="handlePlaylistNameMouseOver(true)" @mouseout="handlePlaylistNameMouseOut(false)">
+            <h2 style="font-weight: bold; display: inline-block; text-decoration: underline;">{{ playlistName }}</h2>
+            <img src="../icons/link-icon.png" alt="Link Icon" class="link-icon" style="width: 12px; height: 12px; margin-left: 5px">
+          </div>
+          <track-arrangement-view :tracks="Object.fromEntries(Object.entries(tracks).slice(0, 14))" :discoverMode="false"></track-arrangement-view>
+    <!--       <div class="more-track-div" v-if="renderExtendedDiv" @click="openPlaylistDetail(playlistName, $event)" @mouseover="handlePlaylistNameMouseOver" @mouseout="handlePlaylistNameMouseOut">. . .
+          </div> -->
+
+        </div>
       </div>
-      <track-arrangement-view :tracks="Object.fromEntries(Object.entries(tracks).slice(0, 10))" :discoverMode="false"></track-arrangement-view>
-<!--       <div class="more-track-div" v-if="renderExtendedDiv" @click="openPlaylistDetail(playlistName, $event)" @mouseover="handlePlaylistNameMouseOver" @mouseout="handlePlaylistNameMouseOut">. . .
-      </div> -->
 
     </div>
-  </div>
+    <popup :showPopup="isHovered" infoText="Open Playlist in detail view"></popup>
+
 </template>
 
 <script>
 import TrackArrangementView from "@/components/Arrangements/TrackArrangementView.vue";
+import Popup from "@/components/Popup.vue"
 
 export default {
-  components: {TrackArrangementView},
+  components: {TrackArrangementView, Popup},
   props: {
-    data: Object,
+    playlists: Object,
+    folderName: String,
     renderExtendedDiv: {
       type: Boolean,
       required: false,
-    }
+    },
+  },
+  data() {
+    return {
+      collapsed: true,
+      isHovered: false,
+    };
   },
   created() {
-    console.log(this.renderExtendedDiv)
+    if (this.folderName === "diff")
+      this.collapsed = false;
+  },
+  unmounted() {
+    document.body.style.cursor = "auto";
   },
   methods: {
+    collapseCursor(value) {
+      if (value)
+      document.body.style.cursor = "pointer";
+      else
+        document.body.style.cursor = "auto";
+    },
+    toggleCollapse() {
+      this.collapsed = !this.collapsed;
+    },
     openPlaylistDetail: function(playlistName, event) {
       this.$emit('open-playlist-detail-component', playlistName);
     },
-    handlePlaylistNameMouseOver(){
+    handlePlaylistNameMouseOver(value){
       document.body.style.cursor = "pointer";
+      this.isHovered = value;
     },
-    handlePlaylistNameMouseOut() {
+    handlePlaylistNameMouseOut(value) {
       document.body.style.cursor = "auto";
+      this.isHovered = value;
     }
   },
 };
 </script>
 
 <style scoped>
+.folder-div {
+  padding: 5px 15px;
+}
+
+.dotted-border-line-div {
+  padding: 5px 0px;
+  border-bottom-style: dotted; 
+  border-width: 2px; 
+  border-color: #2c3e50; 
+}
+
+.collapsible-content {
+  display: block; /* Initially visible */
+}
+
+.collapsed {
+  display: none; /* Hidden when collapsed */
+}
+
 .playlist-div {
-  margin-bottom: 10px 0px;
+  margin: 5px 0px;
 
   border-bottom-style: solid;
   border-width: 2px;
