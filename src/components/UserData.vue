@@ -76,10 +76,8 @@ export default {
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
       const response = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/latest_user_data_states?amount=${this.stateAmount}`)
-      console.log(response[index]['created_at']['$date'].substring(0, 10))
       this.exportDate = response[index]['created_at']['$date'].substring(0, 10)
       this.userData = response[index]['data']
-      console.log(this.userData)
 
       if (this.shortTerm) {
         this.termData = this.userData['short_term']
@@ -94,7 +92,6 @@ export default {
         alert("Error in evaluating user data response from backend...")
         console.log(response)
       }
-      console.log(this.termData.fav_tracks)
     },
     async showShortTerm() {
       this.shortTerm = true;

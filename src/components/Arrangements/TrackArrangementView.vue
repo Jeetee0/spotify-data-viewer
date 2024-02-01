@@ -63,6 +63,7 @@ export default {
         }
         const responseData = await response.json();
         const message = `Track with id '${responseData.track_id}' was added to playlist with id '${responseData.playlist_id}'`
+        console.log(message);
       } catch (error) {
         console.error('Error:', error);
       }
