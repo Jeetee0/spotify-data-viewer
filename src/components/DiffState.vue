@@ -4,11 +4,13 @@
       <h1>{{ title }}</h1>
       <div style="display: flex; flex-direction: row; align-content: center; ">
         <p style="font-size: 14px">Amount of latest states combined:</p>
-        <input type="number" id="quantity" v-model="diffAmount" min="1" max="10" width="100px" style="max-width: 50px; margin-left: 20px">
+        <input type="number" id="quantity" v-model="diffAmount" min="1" max="10" width="100px"
+               style="max-width: 50px; margin-left: 20px">
       </div>
     </div>
     <div class="bottom-line-div"></div>
-    <playlist-arrangement-view :playlists="playlistData" :folderName="'diff'" :renderExtendedDiv="false" @open-playlist-detail-component="openPlaylistDetail"/>
+    <playlist-arrangement-view :playlists="playlistData" :folderName="'diff'" :renderExtendedDiv="false"
+                               @open-playlist-detail-component="openPlaylistDetail"/>
   </div>
 </template>
 
@@ -46,8 +48,7 @@ export default {
         for (const playlistName in diffState) {
           if (!(playlistName in result)) {
             result[playlistName] = diffState[playlistName]
-          }
-          else {
+          } else {
             result[playlistName] = result[playlistName].concat(diffState[playlistName])
           }
         }
@@ -105,8 +106,8 @@ export default {
 <style scoped>
 .bottom-line-div {
   padding: 5px 0px;
-  border-bottom-style: solid; 
-  border-width: 2px; 
-  border-color: #2c3e50; 
+  border-bottom-style: solid;
+  border-width: 2px;
+  border-color: #2c3e50;
 }
 </style>

@@ -3,7 +3,8 @@
     <div id="info-selector-div">
       <h1>{{ title }}</h1>
       <label for="playlistId" style="margin-right: 15px">Spotify playlist ID:</label>
-      <input v-model="playlistId" id="playlistId" placeholder="Enter playlist ID" style="margin-right: 15px; min-width: 220px"/>
+      <input v-model="playlistId" id="playlistId" placeholder="Enter playlist ID"
+             style="margin-right: 15px; min-width: 220px"/>
       <button @click="fetchPlaylistData">Fetch Playlist</button>
     </div>
     <div class="bottom-line-div"></div>
@@ -13,35 +14,38 @@
         <h2 style="font-weight: bold">Playlist '{{ playlist.name }}'</h2>
         <div id="columns-div">
           <div style="padding: 10px">
-          <a :href="playlist.spotify_url" target="_blank"><img :src="playlist.image_url" alt="Playlist Cover"
-                                                               style="height: 200px; width: 200px; border-radius: 15px"></a>
-        </div>
-        <div style="padding: 10px; max-width: 400px">
-          <p><span style="font-weight: bold;">Owner:</span> {{ playlist.owner_id }}</p>
-          <p><span style="font-weight: bold;">Number of Tracks:</span> {{ playlist.amount_of_tracks }}</p>
-          <p><span style="font-weight: bold;">Folder:</span> {{ playlist.folder }}</p>
-          <p><span style="font-weight: bold;">Unique Artists:</span> {{ playlist.genre_classification.unique_artists }}</p>
-          <p><span style="font-weight: bold;">Unique Genres:</span> {{ playlist.genre_classification.unique_genres }}</p>
-          <p><span style="font-weight: bold;">Description:</span> {{ playlist.description }}</p>
-        </div>
-        <div style="padding: 10px;">
-          <h2>Genre Classification</h2>
-          <ol class="bold-numbering">
-            <li v-for="(count, genre) in Object.fromEntries(Object.entries(playlist.genre_classification.genres).slice(0, 5))"
-                :key="genre">
-              {{ genre }}: {{ count }}
-            </li>
-          </ol>
-        </div>
-        <div style="padding: 10px">
-          <h2>Top Artists</h2>
-          <ol class="bold-numbering">
-            <li v-for="(artist, id) in Object.fromEntries(Object.entries(playlist.genre_classification.artists).slice(0, 5))"
-                :key="id">
-              {{ artist.name }} - {{ artist.amount }}
-            </li>
-          </ol>
-        </div>
+            <a :href="playlist.spotify_url" target="_blank"><img :src="playlist.image_url" alt="Playlist Cover"
+                                                                 style="height: 200px; width: 200px; border-radius: 15px"></a>
+          </div>
+          <div style="padding: 10px; max-width: 400px">
+            <p><span style="font-weight: bold;">Owner:</span> {{ playlist.owner_id }}</p>
+            <p><span style="font-weight: bold;">Number of Tracks:</span> {{ playlist.amount_of_tracks }}</p>
+            <p><span style="font-weight: bold;">Folder:</span> {{ playlist.folder }}</p>
+            <p><span style="font-weight: bold;">Unique Artists:</span> {{
+                playlist.genre_classification.unique_artists
+              }}</p>
+            <p><span style="font-weight: bold;">Unique Genres:</span> {{ playlist.genre_classification.unique_genres }}
+            </p>
+            <p><span style="font-weight: bold;">Description:</span> {{ playlist.description }}</p>
+          </div>
+          <div style="padding: 10px;">
+            <h2>Genre Classification</h2>
+            <ol class="bold-numbering">
+              <li v-for="(count, genre) in Object.fromEntries(Object.entries(playlist.genre_classification.genres).slice(0, 5))"
+                  :key="genre">
+                {{ genre }}: {{ count }}
+              </li>
+            </ol>
+          </div>
+          <div style="padding: 10px">
+            <h2>Top Artists</h2>
+            <ol class="bold-numbering">
+              <li v-for="(artist, id) in Object.fromEntries(Object.entries(playlist.genre_classification.artists).slice(0, 5))"
+                  :key="id">
+                {{ artist.name }} - {{ artist.amount }}
+              </li>
+            </ol>
+          </div>
         </div>
 
       </div>
@@ -155,9 +159,9 @@ export default {
 }
 
 .bottom-line-div {
-  border-bottom-style: solid; 
-  border-width: 2px; 
-  border-color: #2c3e50; 
+  border-bottom-style: solid;
+  border-width: 2px;
+  border-color: #2c3e50;
   margin: 0px 0px
 }
 
@@ -169,6 +173,7 @@ export default {
 .bold-numbering li {
   counter-increment: my-counter;
 }
+
 .bold-numbering li::before {
   content: counter(my-counter); /* Use the counter value as content */
   font-weight: bold; /* Make the numbering bold */

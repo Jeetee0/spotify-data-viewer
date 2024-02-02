@@ -4,12 +4,14 @@
       <h1>{{ title }}</h1>
       <div style="display: flex; flex-direction: row; align-content: center; ">
         <p>Choose latest state:</p>
-        <input type="number" id="quantity" v-model="stateAmount" min="1" max="10" width="100px" style="margin: 5px 15px; max-width: 50px;">
+        <input type="number" id="quantity" v-model="stateAmount" min="1" max="10" width="100px"
+               style="margin: 5px 15px; max-width: 50px;">
       </div>
       <p>Showing last 10 tracks added to playlist</p>
     </div>
     <div id="playlist-view-div">
-      <playlist-folder-arrangement :playlistsWithFolders="playlistData" :renderExtendedDiv="true" @open-playlist-detail-component="openPlaylistDetail"/>
+      <playlist-folder-arrangement :playlistsWithFolders="playlistData" :renderExtendedDiv="true"
+                                   @open-playlist-detail-component="openPlaylistDetail"/>
     </div>
   </div>
 </template>
@@ -41,7 +43,7 @@ export default {
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
       const response = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/latest_playlist_states?amount=${this.stateAmount}`)
       let newPlaylistData = {};
-      const playlists = response[this.stateAmount-1]['playlists']
+      const playlists = response[this.stateAmount - 1]['playlists']
       this.playlists = playlists
 
       for (const playlistId in playlists) {

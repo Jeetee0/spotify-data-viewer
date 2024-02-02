@@ -1,25 +1,25 @@
-
-
 <template>
   <div style="color: black;">
     <div id="input-container-div">
-        <div id="left-side-div" style="padding: 5px 15px">
-          <h1>{{ title }}</h1>
-      <div style="display: flex; flex-direction: row; align-content: center; ">
-        <p style="font-size: 14px">Choose latest state:</p>
-        <input type="number" id="quantity" v-model="stateAmount" min="1" max="100" style="margin-bottom: 15px; max-width: 50px; margin-left: 20px; margin-right: 20px">
-        <p style="font-size: 14px">Export date:</p>
-        <input disabled="true" id="user-data-export-date" v-model="exportDate" style="margin-bottom: 15px; max-width: 100px; margin-left: 20px; margin-right: 20px; pointer-events: none;"/>
-      </div>
-      <div id="term-separation-div">
-        <button id="shortTermButton" @click="showShortTerm" :disabled="shortTerm">Short term</button>
-        <button id="midTermButton" @click="showMidTerm" :disabled="midTerm">Mid term</button>
-        <button id="longTermButton" @click="showLongTerm" :disabled="longTerm">Long term</button>
-      </div>
+      <div id="left-side-div" style="padding: 5px 15px">
+        <h1>{{ title }}</h1>
+        <div style="display: flex; flex-direction: row; align-content: center; ">
+          <p style="font-size: 14px">Choose latest state:</p>
+          <input type="number" id="quantity" v-model="stateAmount" min="1" max="100"
+                 style="margin-bottom: 15px; max-width: 50px; margin-left: 20px; margin-right: 20px">
+          <p style="font-size: 14px">Export date:</p>
+          <input disabled="true" id="user-data-export-date" v-model="exportDate"
+                 style="margin-bottom: 15px; max-width: 100px; margin-left: 20px; margin-right: 20px; pointer-events: none;"/>
         </div>
-        <div id="right-side-div">
-          <div ref="spotifyPlayer" style="margin-top: 15px; margin-bottom: 10px;"></div>
+        <div id="term-separation-div">
+          <button id="shortTermButton" @click="showShortTerm" :disabled="shortTerm">Short term</button>
+          <button id="midTermButton" @click="showMidTerm" :disabled="midTerm">Mid term</button>
+          <button id="longTermButton" @click="showLongTerm" :disabled="longTerm">Long term</button>
         </div>
+      </div>
+      <div id="right-side-div">
+        <div ref="spotifyPlayer" style="margin-top: 15px; margin-bottom: 10px;"></div>
+      </div>
 
     </div>
 
@@ -27,7 +27,8 @@
 
     <div class="results-div">
       <h2 style="padding-bottom: 10px; font-weight: bold;">Top 10 Favorite Tracks</h2>
-      <track-arrangement-view :tracks="this.termData.fav_tracks" :discoverMode="true" @play-track="playTrack"></track-arrangement-view>
+      <track-arrangement-view :tracks="this.termData.fav_tracks" :discoverMode="true"
+                              @play-track="playTrack"></track-arrangement-view>
     </div>
     <div class="bottom-line-div"></div>
     <div class="results-div">
@@ -81,14 +82,11 @@ export default {
 
       if (this.shortTerm) {
         this.termData = this.userData['short_term']
-      }
-      else if (this.midTerm) {
+      } else if (this.midTerm) {
         this.termData = this.userData['mid_term']
-      }
-      else if (this.longTerm) {
+      } else if (this.longTerm) {
         this.termData = this.userData['long_term']
-      }
-      else {
+      } else {
         alert("Error in evaluating user data response from backend...")
         console.log(response)
       }
@@ -96,19 +94,19 @@ export default {
     async showShortTerm() {
       this.shortTerm = true;
       this.midTerm = false;
-      this.longTerm= false;
+      this.longTerm = false;
       await this.requestUserData()
     },
     async showMidTerm() {
       this.shortTerm = false;
       this.midTerm = true;
-      this.longTerm= false;
+      this.longTerm = false;
       await this.requestUserData()
     },
     async showLongTerm() {
       this.shortTerm = false;
       this.midTerm = false;
-      this.longTerm= true;
+      this.longTerm = true;
       await this.requestUserData()
     },
     async fetchData(url) {
@@ -131,7 +129,7 @@ export default {
 <style scoped>
 
 #input-container-div {
-  
+
   display: flex;
   flex-direction: row;
 }
@@ -139,9 +137,9 @@ export default {
 #left-side-div {
   padding-right: 15px;
   margin-right: 25px;
-  border-right-style: solid; 
-  border-width: 2px; 
-  border-color: #2c3e50; 
+  border-right-style: solid;
+  border-width: 2px;
+  border-color: #2c3e50;
 }
 
 #term-separation-div {
@@ -155,9 +153,9 @@ export default {
 }
 
 .bottom-line-div {
-  border-bottom-style: solid; 
-  border-width: 2px; 
-  border-color: #2c3e50; 
+  border-bottom-style: solid;
+  border-width: 2px;
+  border-color: #2c3e50;
 }
 
 button {

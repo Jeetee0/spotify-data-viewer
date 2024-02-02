@@ -9,62 +9,68 @@
       <div id="discover-left-side-div">
         <div id="prepare-request-div" style="display: flex; flex-direction: row;">
           <div id="seed-div">
-          <h2 style="font-weight: bold;">Select seeds</h2>
-          <p>You can select up to five seeds from the three categories (genres, artists and tracks):</p>
-          <div style="display: flex; flex-direction: row; padding-top: 10px">
-            <div id="seed-selection-div">
-              <label for="genreSelect">Select genre:</label>
-              <input v-model="genreFilter" placeholder="Type to filter genres" />
-              <select v-model="genreSelected" id="genreSelect" name="genre" :disabled="disableSeedInputs"
-                      style="height: 30px; width: 250px; resize: none">
-                <option v-for="genreName in filteredGenres" :key="genreName" :value="genreName">{{ genreName }}</option>
-              </select>
+            <h2 style="font-weight: bold;">Select seeds</h2>
+            <p>You can select up to five seeds from the three categories (genres, artists and tracks):</p>
+            <div style="display: flex; flex-direction: row; padding-top: 10px">
+              <div id="seed-selection-div">
+                <label for="genreSelect">Select genre:</label>
+                <input v-model="genreFilter" placeholder="Type to filter genres"/>
+                <select v-model="genreSelected" id="genreSelect" name="genre" :disabled="disableSeedInputs"
+                        style="height: 30px; width: 250px; resize: none">
+                  <option v-for="genreName in filteredGenres" :key="genreName" :value="genreName">{{
+                      genreName
+                    }}
+                  </option>
+                </select>
 
-              <label for="artistSelect" style="padding-top: 6px">Select artist:</label>
-              <input v-model="artistFilter" placeholder="Type to filter artists" />
-              <select v-model="artistSelected" id="artistSelect" name="artist" :disabled="disableSeedInputs"
-                      style="height: 30px; width: 250px; resize: none">
-                <option v-for="artist in filteredArtists" :key="artist.id" :value="artist">{{ artist.name }}</option>
-              </select>
+                <label for="artistSelect" style="padding-top: 6px">Select artist:</label>
+                <input v-model="artistFilter" placeholder="Type to filter artists"/>
+                <select v-model="artistSelected" id="artistSelect" name="artist" :disabled="disableSeedInputs"
+                        style="height: 30px; width: 250px; resize: none">
+                  <option v-for="artist in filteredArtists" :key="artist.id" :value="artist">{{ artist.name }}</option>
+                </select>
 
-              <label for="trackSelect" style="padding-top: 6px">Select track:</label>
-              <input v-model="trackFilter" placeholder="Type to filter tracks" />
-              <select v-model="trackSelected" id="trackSelect" name="track" :disabled="disableSeedInputs"
-                      style="height: 30px; width: 250px; resize: none">
-                <option v-for="track in filteredTracks" :key="track.id" :value="track">
-  <!--                <span>{{ track.name }}</span> - <span style="text-align: right">{{ track.b }}</span>-->
-                  {{ track.name }} -
-                  {{ track.artists.map(artist => artist.name).join(', ') }}
-                </option>
-              </select>
-            </div>
-            <div id="seeds-chosen-div">
-              <label for="chosenGenres">Selected genres:</label>
-              <div style="display: flex; flex-direction: row; padding-bottom: 18px">
-                <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 225px; resize: none" v-model="chosenGenres"
+                <label for="trackSelect" style="padding-top: 6px">Select track:</label>
+                <input v-model="trackFilter" placeholder="Type to filter tracks"/>
+                <select v-model="trackSelected" id="trackSelect" name="track" :disabled="disableSeedInputs"
+                        style="height: 30px; width: 250px; resize: none">
+                  <option v-for="track in filteredTracks" :key="track.id" :value="track">
+                    <!--                <span>{{ track.name }}</span> - <span style="text-align: right">{{ track.b }}</span>-->
+                    {{ track.name }} -
+                    {{ track.artists.map(artist => artist.name).join(', ') }}
+                  </option>
+                </select>
+              </div>
+              <div id="seeds-chosen-div">
+                <label for="chosenGenres">Selected genres:</label>
+                <div style="display: flex; flex-direction: row; padding-bottom: 18px">
+                <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 225px; resize: none"
+                          v-model="chosenGenres"
                           id="chosenGenres"/>
-                <button @click="resetChosenGenres" style="margin-left: 15px; width: 70px; font-weight: bold">Reset
-                </button>
-              </div>
+                  <button @click="resetChosenGenres" style="margin-left: 15px; width: 70px; font-weight: bold">Reset
+                  </button>
+                </div>
 
-              <label for="chosenArtists">Selected artists:</label>
-              <div style="display: flex; flex-direction: row; padding-bottom: 18px">
-                <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 225px; resize: none" v-model="chosenArtists[1]"
+                <label for="chosenArtists">Selected artists:</label>
+                <div style="display: flex; flex-direction: row; padding-bottom: 18px">
+                <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 225px; resize: none"
+                          v-model="chosenArtists[1]"
                           id="chosenArtists"/>
-                <button @click="resetChosenArtists" style="margin-left: 15px; width: 70px; font-weight: bold">Reset
-                </button>
-              </div>
+                  <button @click="resetChosenArtists" style="margin-left: 15px; width: 70px; font-weight: bold">Reset
+                  </button>
+                </div>
 
-              <label for="chosenTracks">Selected tracks:</label>
-              <div style="display: flex; flex-direction: row;">
-                <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 225px; resize: none" v-model="chosenTracks[1]"
+                <label for="chosenTracks">Selected tracks:</label>
+                <div style="display: flex; flex-direction: row;">
+                <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 225px; resize: none"
+                          v-model="chosenTracks[1]"
                           id="chosenTracks"/>
-                <button @click="resetChosenTracks" style="margin-left: 15px; width: 70px; font-weight: bold">Reset
-                </button>
-              </div>
+                  <button @click="resetChosenTracks" style="margin-left: 15px; width: 70px; font-weight: bold">Reset
+                  </button>
+                </div>
 
+              </div>
             </div>
-          </div>
           </div>
           <div id="optional-parameter-div">
             <div id="optional-1-div" style="padding-right: 20px">
@@ -72,37 +78,42 @@
               <div class="single-parameter-div">
                 <label style="font-weight: bold" for="limit">Limit:</label>
                 <input class="parameter-input" v-model="limit" id="limit" type="number" min="1" max="100"
-                      @input="handleLimitInput('limit', 1, 100)"/>
-                <p style="font-size: 12px; width: 200px; margin-top: 4px;">Select the amount of recommended tracks for the response (1-100):</p>
+                       @input="handleLimitInput('limit', 1, 100)"/>
+                <p style="font-size: 12px; width: 200px; margin-top: 4px;">Select the amount of recommended tracks for
+                  the response (1-100):</p>
               </div>
               <div class="single-parameter-div">
                 <label for="market" style="font-weight: bold">Market:</label>
                 <input class="parameter-input" v-model="market" id="market" type="text"/>
-                <p style="font-size: 12px; width: 200px;">You can specify a market with an 'ISO 3166-1 alpha-2' country code (eg. DE, EN, IN etc.):</p>
+                <p style="font-size: 12px; width: 200px;">You can specify a market with an 'ISO 3166-1 alpha-2' country
+                  code (eg. DE, EN, IN etc.):</p>
               </div>
             </div>
             <div id="optional-2-div" style="margin-left: 5px; display: flex; flex-direction: column; min-width: 160px;">
               <div class="single-parameter-div">
                 <label for="min_tempo">Min Tempo (bpm):</label>
                 <input class="parameter-input" v-model="min_tempo" id="min_tempo" type="number" min="50" max="300"
-                      @input="handleLimitInput('min_tempo', 1, 300)"/>
+                       @input="handleLimitInput('min_tempo', 1, 300)"/>
                 <label for="max_tempo">Max Tempo (bpm):</label>
                 <input class="parameter-input" v-model="max_tempo" id="max_tempo" type="number" min="50" max="300"
-                      @input="handleLimitInput('max_tempo', 1, 300)"/>
+                       @input="handleLimitInput('max_tempo', 1, 300)"/>
                 <label for="target_tempo">Target Tempo (bpm):</label>
                 <input class="parameter-input" v-model="target_tempo" id="target_tempo" type="number" min="50" max="300"
-                      @input="handleLimitInput('target_tempo', 1, 300)"/>
+                       @input="handleLimitInput('target_tempo', 1, 300)"/>
               </div>
               <div class="single-parameter-div">
                 <label for="min_energy">Min Energy (0 - 1):</label>
-                <input class="parameter-input" v-model="min_energy" id="min_energy" type="number" step="0.01" min="0" max="1"
-                      @input="handleLimitInput('min_energy', 0, 1)"/>
+                <input class="parameter-input" v-model="min_energy" id="min_energy" type="number" step="0.01" min="0"
+                       max="1"
+                       @input="handleLimitInput('min_energy', 0, 1)"/>
                 <label for="max_energy">Max Energy (0 - 1):</label>
-                <input class="parameter-input" v-model="max_energy" id="max_energy" type="number" step="0.01" min="0" max="1"
-                      @input="handleLimitInput('max_energy', 0, 1)"/>
+                <input class="parameter-input" v-model="max_energy" id="max_energy" type="number" step="0.01" min="0"
+                       max="1"
+                       @input="handleLimitInput('max_energy', 0, 1)"/>
                 <label for="target_energy">Target Energy (0 - 1):</label>
-                <input class="parameter-input" v-model="target_energy" id="target_energy" type="number" min="0" step="0.01" 
-                      max="1" @input="handleLimitInput('target_energy', 0, 1)"/>
+                <input class="parameter-input" v-model="target_energy" id="target_energy" type="number" min="0"
+                       step="0.01"
+                       max="1" @input="handleLimitInput('target_energy', 0, 1)"/>
               </div>
 
             </div>
@@ -110,48 +121,53 @@
               <div class="single-parameter-div">
                 <label for="min_key">Min Key (0 - 11):</label>
                 <input class="parameter-input" v-model="min_key" id="min_key" type="number" min="0" max="100"
-                      @input="handleLimitInput('min_key', 0, 11)"/>
+                       @input="handleLimitInput('min_key', 0, 11)"/>
                 <label for="max_key">Max Key (0 - 11):</label>
                 <input class="parameter-input" v-model="max_key" id="max_key" type="number" min="0" max="100"
-                      @input="handleLimitInput('max_key', 0, 11)"/>
+                       @input="handleLimitInput('max_key', 0, 11)"/>
                 <label for="target_key">Target Key (0 - 11):</label>
                 <input class="parameter-input" v-model="target_key" id="target_key" type="number" min="0"
-                      max="100" @input="handleLimitInput('target_key', 0, 11)"/>
+                       max="100" @input="handleLimitInput('target_key', 0, 11)"/>
               </div>
               <div class="single-parameter-div">
                 <label for="min_mode">Min Mode (0 - 1):</label>
                 <input class="parameter-input" v-model="min_mode" id="min_mode" type="number" min="0" max="1"
-                      @input="handleLimitInput('min_mode', 0, 1)"/>
+                       @input="handleLimitInput('min_mode', 0, 1)"/>
                 <label for="max_mode">Max Mode (0 - 1):</label>
                 <input class="parameter-input" v-model="max_mode" id="max_mode" type="number" min="0" max="1"
-                      @input="handleLimitInput('max_mode', 0, 1)"/>
+                       @input="handleLimitInput('max_mode', 0, 1)"/>
                 <label for="target_mode">Target Mode (0 - 1):</label>
                 <input class="parameter-input" v-model="target_mode" id="target_mode" type="number" min="0"
-                      max="1" @input="handleLimitInput('target_mode', 0, 1)"/>
+                       max="1" @input="handleLimitInput('target_mode', 0, 1)"/>
               </div>
-              </div>
+            </div>
             <div id="optional-4-div" style="margin-left: 5px; display: flex; flex-direction: column; min-width: 200px;">
               <div class="single-parameter-div">
                 <label for="min_popularity">Min Popularity (0 - 100):</label>
-                <input class="parameter-input" v-model="min_popularity" id="min_popularity" type="number" min="0" max="100"
-                      @input="handleLimitInput('min_popularity', 0, 100)"/>
+                <input class="parameter-input" v-model="min_popularity" id="min_popularity" type="number" min="0"
+                       max="100"
+                       @input="handleLimitInput('min_popularity', 0, 100)"/>
                 <label for="max_popularity">Max Popularity (0 - 100):</label>
-                <input class="parameter-input" v-model="max_popularity" id="max_popularity" type="number" min="0" max="100"
-                      @input="handleLimitInput('max_popularity', 0, 100)"/>
+                <input class="parameter-input" v-model="max_popularity" id="max_popularity" type="number" min="0"
+                       max="100"
+                       @input="handleLimitInput('max_popularity', 0, 100)"/>
                 <label for="target_popularity">Target Popularity (0 - 100):</label>
                 <input class="parameter-input" v-model="target_popularity" id="target_popularity" type="number" min="0"
-                      max="100" @input="handleLimitInput('target_popularity', 0, 100)"/>
+                       max="100" @input="handleLimitInput('target_popularity', 0, 100)"/>
               </div>
               <div class="single-parameter-div">
                 <label for="min_danceability">Min Danceability (0 - 1):</label>
-                <input class="parameter-input" v-model="min_danceability" id="min_danceability" type="number" step="0.01" min="0" max="1"
-                      @input="handleLimitInput('min_danceability', 0, 1)"/>
+                <input class="parameter-input" v-model="min_danceability" id="min_danceability" type="number"
+                       step="0.01" min="0" max="1"
+                       @input="handleLimitInput('min_danceability', 0, 1)"/>
                 <label for="max_danceability">Max Danceability (0 - 1):</label>
-                <input class="parameter-input" v-model="max_danceability" id="max_danceability" type="number" step="0.01" min="0" max="1"
-                      @input="handleLimitInput('max_danceability', 0, 1)"/>
+                <input class="parameter-input" v-model="max_danceability" id="max_danceability" type="number"
+                       step="0.01" min="0" max="1"
+                       @input="handleLimitInput('max_danceability', 0, 1)"/>
                 <label for="target_danceability">Target Danceability (0 - 1):</label>
-                <input class="parameter-input" v-model="target_danceability" id="target_danceability" type="number" step="0.01" min="0"
-                      max="1" @input="handleLimitInput('target_danceability', 0, 1)"/>
+                <input class="parameter-input" v-model="target_danceability" id="target_danceability" type="number"
+                       step="0.01" min="0"
+                       max="1" @input="handleLimitInput('target_danceability', 0, 1)"/>
               </div>
             </div>
           </div>
@@ -160,8 +176,8 @@
         <div id="track-view-div" style="">
           <div style="display: flex; flex-direction: column; margin: 0px 20px;">
             <button
-              style="font-size: 22px; height: 50px; width: 200px;"
-              @click="findTracks">Find tracks
+                style="font-size: 22px; height: 50px; width: 200px;"
+                @click="findTracks">Find tracks
             </button>
             <button
                 style="font-size: 16px; margin-top: 10px; height: 28px; width: 200px"
@@ -169,17 +185,20 @@
             </button>
           </div>
 
-          <div v-if="showSelectedTrack" style="display: flex; flex-direction: column; padding-top: 25px; padding-bottom: 20px; padding-left: 15px; border-left-style: solid; border-width: 2px; border-color: #2c3e50;">
+          <div v-if="showSelectedTrack"
+               style="display: flex; flex-direction: column; padding-top: 25px; padding-bottom: 20px; padding-left: 15px; border-left-style: solid; border-width: 2px; border-color: #2c3e50;">
             <div ref="spotifyPlayer" style=""></div>
             <div style="display: flex; flex-direction: row; margin: auto">
               <button
-                style="font-size: 14px; margin-right: 10px; height: 28px; width: 120px"
-                @click="addToPlaylist(1)"><img src="./icons/plus.png" alt="+" style="width: 10px; height: 10px; margin-right: 5px;" /> uptempo
-            </button>
-            <button
-                style="font-size: 14px; height: 28px; width: 120px"
-                @click="addToPlaylist(2)"><img src="./icons/plus.png" alt="+" style="width: 10px; height: 10px; margin-right: 5px;" /> downtempo
-            </button>
+                  style="font-size: 14px; margin-right: 10px; height: 28px; width: 120px"
+                  @click="addToPlaylist(1)"><img src="./icons/plus.png" alt="+"
+                                                 style="width: 10px; height: 10px; margin-right: 5px;"/> uptempo
+              </button>
+              <button
+                  style="font-size: 14px; height: 28px; width: 120px"
+                  @click="addToPlaylist(2)"><img src="./icons/plus.png" alt="+"
+                                                 style="width: 10px; height: 10px; margin-right: 5px;"/> downtempo
+              </button>
             </div>
           </div>
 
@@ -207,26 +226,32 @@
         </div>
       </div>
       <div id="key-info-div">
-              <div style="display: flex; flex-direction: row;">
-                <div style="margin-right: 15px;">
-                  <h2 style="font-weight: bold;">Tonality info</h2>
-                  <h3 style="width: 220px; text-align: justify;">The tonality is a combination of the two parameters 'key' and 'mode'. 
-                    'Mode' can either be 0 or 1 and defines minor or major. The 'key' parameter ranges from 0 - 11 and is in pitch class notation. You can check the image to the left to translate it into the key. 
-                    The camelot wheel shows how to mix tracks harmonously. Adjacent keys should in general be a good choice for mixing together.</h3>
-                </div>
-                
-                <img src="../assets/pitch_class.png" alt="camelot-wheel" style="height: 452px; width: 214px; border-radius: 15px; margin: 25px 20px;">  
-                <img src="../assets/camelot-wheel.png" alt="camelot-wheel" style="height: 500px; width: 500px; border-radius: 15px; margin: 0px 0px">  
-                
-                
-              </div>
-            </div>
+        <div style="display: flex; flex-direction: row;">
+          <div style="margin-right: 15px;">
+            <h2 style="font-weight: bold;">Tonality info</h2>
+            <h3 style="width: 220px; text-align: justify;">The tonality is a combination of the two parameters 'key' and
+              'mode'.
+              'Mode' can either be 0 or 1 and defines minor or major. The 'key' parameter ranges from 0 - 11 and is in
+              pitch class notation. You can check the image to the left to translate it into the key.
+              The camelot wheel shows how to mix tracks harmonously. Adjacent keys should in general be a good choice
+              for mixing together.</h3>
+          </div>
+
+          <img src="../assets/pitch_class.png" alt="camelot-wheel"
+               style="height: 452px; width: 214px; border-radius: 15px; margin: 25px 20px;">
+          <img src="../assets/camelot-wheel.png" alt="camelot-wheel"
+               style="height: 500px; width: 500px; border-radius: 15px; margin: 0px 0px">
+
+
+        </div>
+      </div>
     </div>
 
     <div id="track-results-div">
       <h2 style="font-weight: bold; padding-bottom: 10px;">Results</h2>
-      <track-arrangement-view :tracks="this.recommendedTracks" :discoverMode="true" @play-track="playTrack"></track-arrangement-view>
-      
+      <track-arrangement-view :tracks="this.recommendedTracks" :discoverMode="true"
+                              @play-track="playTrack"></track-arrangement-view>
+
 
     </div>
   </div>
@@ -290,7 +315,7 @@ export default {
       min_danceability: null,
       max_danceability: null,
       target_danceability: null,
-      
+
       recommendedTracks: [],
     };
   },
@@ -318,9 +343,9 @@ export default {
     filteredTracks() {
       if (this.trackFilter === "")
         return this.tracks;
-      return this.tracks.filter(track => track.name.toLowerCase().includes(this.trackFilter.toLowerCase()) || 
-      track.artists.map(artist => artist.name).join(', ').toLowerCase().includes(this.trackFilter.toLowerCase()));
-      
+      return this.tracks.filter(track => track.name.toLowerCase().includes(this.trackFilter.toLowerCase()) ||
+          track.artists.map(artist => artist.name).join(', ').toLowerCase().includes(this.trackFilter.toLowerCase()));
+
     },
   },
   methods: {
@@ -405,15 +430,15 @@ export default {
         params.append('market', this.market.toUpperCase())
       }
 
-        // fine tune
-        const parameterList = ['min_popularity', 'max_popularity', 'target_popularity', 'min_tempo', 'max_tempo', 'target_tempo', 'min_energy', 'max_energy', 'target_energy', 'min_key', 'max_key', 'target_key', 'min_mode', 'max_mode', 'target_mode', 'min_danceability', 'max_danceability', 'target_danceability']
-        for (const index in parameterList) {
-          const name = parameterList[index]
-          if (this[name] === null || this[name] === undefined || this[name] === "") {
-            continue;
-          }
-          params.append(name, this[name]);
+      // fine tune
+      const parameterList = ['min_popularity', 'max_popularity', 'target_popularity', 'min_tempo', 'max_tempo', 'target_tempo', 'min_energy', 'max_energy', 'target_energy', 'min_key', 'max_key', 'target_key', 'min_mode', 'max_mode', 'target_mode', 'min_danceability', 'max_danceability', 'target_danceability']
+      for (const index in parameterList) {
+        const name = parameterList[index]
+        if (this[name] === null || this[name] === undefined || this[name] === "") {
+          continue;
         }
+        params.append(name, this[name]);
+      }
 
       // request
       const fullUrl = `${baseUrl}?${params.toString()}`;
@@ -477,8 +502,8 @@ export default {
 
     },
     setSameKey() {
-        this.target_key = this.trackFeatures.key;
-        this.target_mode = this.trackFeatures.mode;
+      this.target_key = this.trackFeatures.key;
+      this.target_mode = this.trackFeatures.mode;
     },
     setSimilarBpm() {
       this.min_tempo = Math.round(this.trackFeatures.tempo) - 2;
@@ -487,7 +512,7 @@ export default {
     setSimilarEnergy() {
       this.min_energy = Math.round((this.trackFeatures.energy - 0.1) * 100) / 100;
       this.max_energy = Math.round((this.trackFeatures.energy + 0.1) * 100) / 100;
-      
+
     },
     setSimilarDanceability() {
       this.min_danceability = Math.round((this.trackFeatures.danceability - 0.1) * 100) / 100;
@@ -655,7 +680,7 @@ export default {
 
 #key-info-div {
   padding: 10px 15px;
-  display: flex; 
+  display: flex;
   flex-direction: column;
 
   border-left-style: solid;
@@ -666,11 +691,13 @@ export default {
 .parameter-input {
   width: 100px
 }
+
 #similar-parameters-buttons-div {
   padding: 20px 10px;
   display: flex;
   flex-direction: column;
 }
+
 .set-parameter-button {
   padding: 5px 5px;
   margin: 2px 2px;
@@ -682,6 +709,6 @@ export default {
   display: flex;
   flex-direction: row;
   height: 240px;
-  align-items: center; 
+  align-items: center;
 }
 </style>
