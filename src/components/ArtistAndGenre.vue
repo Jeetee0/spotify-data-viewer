@@ -1,7 +1,40 @@
 <template>
   <div id="container">
+    <div id="track-lookup-div">
+      <h1>Get track info</h1>
+      <label for="trackSelect" style="padding-top: 6px">Select track ({{ Object.keys(tracks).length }}):</label>
+      <input v-model="trackFilter" placeholder="Type to filter tracks" style="width: 200px;"/>
+      <select v-model="trackSelected" id="trackSelect" name="track"
+              style="height: 30px; width: 250px; resize: none; margin-bottom: 15px;">
+        <option v-for="track in filteredTracks" :key="track.id" :value="track">
+          <!--                <span>{{ track.name }}</span> - <span style="text-align: right">{{ track.b }}</span>-->
+          {{ track.name }} -
+          {{ track.artists.map(artist => artist.name).join(', ') }}
+        </option>
+      </select>
+
+      <div id="selected-track-div" v-if="trackSelected" >
+        <div id="track-basic-info-div" style="padding: 15px 15px">
+          <a :href="trackSelected.spotify_url" target="_blank"><img :src="trackSelected.image_url" alt="Album Cover"
+                                                                    style="height: 150px; width: 150px; border-radius: 15px"></a>
+          <h3><span style="font-weight: bold;">{{ trackSelected.name }}</span></h3>
+          <h4 style="margin-bottom: 15px">{{ trackSelected.artists.map(artist => artist.name).join(', ') }}</h4>
+        </div>
+        <div style="padding: 15px 15px">
+          <track-features :trackFeatures="trackFeatures"></track-features>
+        </div>
+        <div style="padding: 15px 15px">
+          <h2>Artists for track:</h2>
+          <artist-arrangement-view style="padding: 5px 15px;" :artists="this.artistsForTrack"
+                                   @open-artist-view="selectArtist"></artist-arrangement-view>
+        </div>
+
+      </div>
+
+
+    </div>
     <div id="artist-view-div">
-      <h1>Get artist info </h1>
+      <h1>Get artist info</h1>
       <h4>Select an artist ({{ Object.keys(artists).length }}):</h4>
       <select v-model="chosenArtist" id="artistSelect" name="artist" style="width: 225px">
         <option v-for="artist in artists" :key="artist.id" :value="artist">{{ artist.name }}</option>
@@ -70,13 +103,21 @@
 <script>
 import ArtistArrangementView from "@/components/Arrangements/ArtistArrangementView.vue";
 import TrackArrangementView from '@/components/Arrangements/TrackArrangementView.vue';
+import TrackFeatures from "@/components/TrackFeatures.vue";
 
 export default {
-  components: {ArtistArrangementView, TrackArrangementView},
+  components: {TrackFeatures, ArtistArrangementView, TrackArrangementView},
   data() {
     return {
       artists: [],
       genres: [],
+
+      tracks: [],
+      trackFilter: "",
+      trackSelected: "",
+      trackFeatures: {},
+      artistsForTrack: [],
+
       artistTracks: [],
       relatedArtists: [],
       followedArtists: [],
@@ -97,9 +138,8 @@ export default {
     const response = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/artists_and_genres`)
     this.genres = response.genres;
     this.artists = response.artists;
-
+    this.tracks = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/tracks`)
     this.followedArtists = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/followed_artists`)
-
   },
   computed: {
     filteredGenres() {
@@ -107,10 +147,20 @@ export default {
         return this.genres;
       return this.genres.filter(genre => genre.toLowerCase().includes(this.genreFilter.toLowerCase()));
     },
+    filteredTracks() {
+      if (this.trackFilter === "")
+        return this.tracks;
+      return this.tracks.filter(track => track.name.toLowerCase().includes(this.trackFilter.toLowerCase()) ||
+          track.artists.map(artist => artist.name).join(', ').toLowerCase().includes(this.trackFilter.toLowerCase()));
+    },
   },
   watch: {
     selectedGenre(newValue) {
       this.getArtistsForGenre(newValue);
+    },
+    async trackSelected(chosenTrack) {
+      this.trackFeatures = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/track_features?track_id=${chosenTrack.id}`);
+      this.artistsForTrack = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/artists_by_ids?artist_ids=${chosenTrack.artists.map(artist => artist.id).join(',')}`)
     },
     async chosenArtist(selectedArtist) {
       this.artistTracks = [];
@@ -156,6 +206,22 @@ export default {
   color: black;
 }
 
+#track-lookup-div {
+  display: flex;
+  flex-direction: column;
+
+  padding: 10px 15px;
+
+  border-bottom-style: solid;
+  border-width: 2px;
+  border-color: #2c3e50;
+}
+
+#selected-track-div {
+  display: flex;
+  flex-direction: row;
+}
+
 #artist-view-div {
   padding: 10px 15px;
 
@@ -170,20 +236,6 @@ export default {
   border-bottom-style: solid;
   border-width: 2px;
   border-color: #2c3e50;
-}
-
-#artist-arrangement-div {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-
-.artist-div {
-  width: 170px;
-  box-sizing: border-box;
-  margin: 5px;
-  text-align: center;
-  font-size: 12px;
 }
 
 .artist-image {
@@ -202,4 +254,6 @@ export default {
   display: flex;
   flex-direction: row;
 }
+
+
 </style>

@@ -10,7 +10,7 @@
     <div id="body">
       <div id="navigation-bar-div">
         <h3 style="font-weight: bold; padding-left: 6px;">General</h3>
-        <button @click="showArtistAndGenreComponent" :disabled="showArtistAndGenre">Artist & Genre</button>
+        <button @click="showArtistAndGenreComponent" :disabled="showArtistAndGenre">Lookup</button>
         <button @click="showDiscoverComponent" :disabled="showDiscover">Discover</button>
 
         <div style="height: 50px;"></div>

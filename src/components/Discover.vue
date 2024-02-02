@@ -345,7 +345,6 @@ export default {
         return this.tracks;
       return this.tracks.filter(track => track.name.toLowerCase().includes(this.trackFilter.toLowerCase()) ||
           track.artists.map(artist => artist.name).join(', ').toLowerCase().includes(this.trackFilter.toLowerCase()));
-
     },
   },
   methods: {
