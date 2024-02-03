@@ -135,11 +135,11 @@ export default {
     };
   },
   async created() {
-    this.tracks = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/tracks`)
-    const response = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/artists_and_genres`)
+    this.tracks = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/tracks`)
+    const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/artists_and_genres`)
     this.genres = response.genres;
     this.artists = response.artists;
-    this.followedArtists = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/followed_artists`)
+    this.followedArtists = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/followed_artists`)
   },
   computed: {
     filteredGenres() {
@@ -159,8 +159,8 @@ export default {
       this.getArtistsForGenre(newValue);
     },
     async trackSelected(chosenTrack) {
-      this.trackFeatures = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/track_features?track_id=${chosenTrack.id}`);
-      this.artistsForTrack = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/artists_by_ids?artist_ids=${chosenTrack.artists.map(artist => artist.id).join(',')}`)
+      this.trackFeatures = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/track_features?track_id=${chosenTrack.id}`);
+      this.artistsForTrack = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/artists_by_ids?artist_ids=${chosenTrack.artists.map(artist => artist.id).join(',')}`)
     },
     async chosenArtist(selectedArtist) {
       this.artistTracks = [];
@@ -172,8 +172,8 @@ export default {
         //const response = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/artist_by_id?artist_id=${selectedArtist.id}`)
         this.selectedArtist = selectedArtist
         this.showSingleArtist = true
-        this.artistTracks = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/artist_top_tracks?artist_id=${selectedArtist.id}`)
-        this.relatedArtists = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/related_artists?artist_id=${selectedArtist.id}`)
+        this.artistTracks = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/artist_top_tracks?artist_id=${selectedArtist.id}`)
+        this.relatedArtists = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/related_artists?artist_id=${selectedArtist.id}`)
       }
     },
   },
@@ -182,7 +182,7 @@ export default {
       this.chosenArtist = selectedArtist;
     },
     async getArtistsForGenre(genre) {
-      this.artistsForGenre = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/artists_for_genre?genre=${genre}`)
+      this.artistsForGenre = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/artists_for_genre?genre=${genre}`)
     },
     async fetchData(url) {
       try {

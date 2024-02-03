@@ -54,7 +54,7 @@ export default {
     async sendRequestToAdd(playlistIndex, trackId) {
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      const url = `http://${backendHost}:${backendPort}/spotify/add_to_default_playlists?playlist_index=${playlistIndex}&track_id=${trackId}`;
+      const url = `${backendHost}:${backendPort}/spotify/add_to_default_playlists?playlist_index=${playlistIndex}&track_id=${trackId}`;
 
       try {
         const response = await fetch(url, {method: 'POST',});

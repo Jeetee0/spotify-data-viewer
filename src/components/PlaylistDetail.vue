@@ -101,7 +101,7 @@ export default {
       try {
         const backendHost = import.meta.env.VITE_BACKEND_HOST;
         const backendPort = import.meta.env.VITE_BACKEND_PORT;
-        const response = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/playlists_by_ids?ids=${this.playlistId}`);
+        const response = await this.fetchData(`${backendHost}:${backendPort}/spotify/playlists_by_ids?ids=${this.playlistId}`);
 
         // Update the component's data with the fetched playlist
         this.playlist = response[0];
@@ -138,7 +138,7 @@ export default {
     async getSpotifyTracksByIdList(track_ids) {
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      return await this.fetchData(`http://${backendHost}:${backendPort}/spotify/tracks_by_ids?ids=${track_ids}`)
+      return await this.fetchData(`${backendHost}:${backendPort}/spotify/tracks_by_ids?ids=${track_ids}`)
     },
     getArtistsNames(artists) {
       return artists.map(artist => artist.name).join(', ');

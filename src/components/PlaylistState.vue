@@ -41,7 +41,7 @@ export default {
     async getLatestPlaylistStates() {
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      const response = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/latest_playlist_states?amount=${this.stateAmount}`)
+      const response = await this.fetchData(`${backendHost}:${backendPort}/spotify/latest_playlist_states?amount=${this.stateAmount}`)
       let newPlaylistData = {};
       const playlists = response[this.stateAmount - 1]['playlists']
       this.playlists = playlists
@@ -83,7 +83,7 @@ export default {
     async getSpotifyTracksByIdList(track_ids) {
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      return await this.fetchData(`http://${backendHost}:${backendPort}/spotify/tracks_by_ids?ids=${track_ids}`)
+      return await this.fetchData(`${backendHost}:${backendPort}/spotify/tracks_by_ids?ids=${track_ids}`)
     },
   },
 };

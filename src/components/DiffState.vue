@@ -40,7 +40,7 @@ export default {
     async getLatestDiffs() {
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      const response = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/latest_diff_states?amount=${this.diffAmount}`)
+      const response = await this.fetchData(`${backendHost}:${backendPort}/spotify/latest_diff_states?amount=${this.diffAmount}`)
       // combine newTracks and playlists
       let result = {}
       for (const diffStateId in response) {
@@ -72,7 +72,7 @@ export default {
     async openPlaylistDetail(playlistName) {
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      const response = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/latest_playlist_states?amount=${1}`)
+      const response = await this.fetchData(`${backendHost}:${backendPort}/spotify/latest_playlist_states?amount=${1}`)
       const playlists = response[0]['playlists']
       for (const playlistId in playlists) {
         if (playlists[playlistId]['name'] === playlistName) {
@@ -97,7 +97,7 @@ export default {
     async getSpotifyTracksByIdList(track_ids) {
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      return await this.fetchData(`http://${backendHost}:${backendPort}/spotify/tracks_by_ids?ids=${track_ids}`)
+      return await this.fetchData(`${backendHost}:${backendPort}/spotify/tracks_by_ids?ids=${track_ids}`)
     },
   },
 };

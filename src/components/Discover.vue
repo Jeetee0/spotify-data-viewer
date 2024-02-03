@@ -322,10 +322,10 @@ export default {
   async created() {
     const backendHost = import.meta.env.VITE_BACKEND_HOST;
     const backendPort = import.meta.env.VITE_BACKEND_PORT;
-    const response = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/artists_and_genres`)
+    const response = await this.fetchData(`${backendHost}:${backendPort}/spotify/artists_and_genres`)
     this.genres = response.genres;
     this.artists = response.artists;
-    this.tracks = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/tracks`)
+    this.tracks = await this.fetchData(`${backendHost}:${backendPort}/spotify/tracks`)
 
     this.loadExampleTrack('6desWeNyiLDZu3lKhckawg');
   },
@@ -351,7 +351,7 @@ export default {
     async loadExampleTrack(trackId) {
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      const url = `http://${backendHost}:${backendPort}/spotify/tracks_by_ids?ids=${trackId}`;
+      const url = `${backendHost}:${backendPort}/spotify/tracks_by_ids?ids=${trackId}`;
       const response = await this.fetchData(url);
       this.showSelectedTrack = true;
       this.playTrack(response[0]);
@@ -359,7 +359,7 @@ export default {
     async addToPlaylist(playlistIndex) {
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      const url = `http://${backendHost}:${backendPort}/spotify/add_to_default_playlists?playlist_index=${playlistIndex}&track_id=${this.selectedTrack.id}`;
+      const url = `${backendHost}:${backendPort}/spotify/add_to_default_playlists?playlist_index=${playlistIndex}&track_id=${this.selectedTrack.id}`;
 
       try {
         const response = await fetch(url, {method: 'POST',});
@@ -378,7 +378,7 @@ export default {
         return;
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      const url = `http://${backendHost}:${backendPort}/spotify/track_features?track_id=${track.id}`
+      const url = `${backendHost}:${backendPort}/spotify/track_features?track_id=${track.id}`
       const response = await this.fetchData(url);
       this.trackFeatures = response;
       this.selectedTrack = track;
@@ -408,7 +408,7 @@ export default {
     async findTracks() {
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      const baseUrl = `http://${backendHost}:${backendPort}/spotify/discover`
+      const baseUrl = `${backendHost}:${backendPort}/spotify/discover`
       const params = new URLSearchParams();
       if (this.chosenGenres.length > 0)
         params.append('genres', this.removeUnnecessaryChars(this.chosenGenres));

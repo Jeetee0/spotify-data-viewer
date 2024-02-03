@@ -76,7 +76,7 @@ export default {
       const index = this.stateAmount - 1;
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      const response = await this.fetchData(`http://${backendHost}:${backendPort}/spotify/latest_user_data_states?amount=${this.stateAmount}`)
+      const response = await this.fetchData(`${backendHost}:${backendPort}/spotify/latest_user_data_states?amount=${this.stateAmount}`)
       this.exportDate = response[index]['created_at']['$date'].substring(0, 10)
       this.userData = response[index]['data']
 

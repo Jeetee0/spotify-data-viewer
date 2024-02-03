@@ -168,7 +168,7 @@ export default {
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
       const backendPort = import.meta.env.VITE_BACKEND_PORT;
       try {
-        fetch(`http://${backendHost}:${backendPort}/spotify/trigger_complete_data_retrieval`, {
+        fetch(`${backendHost}:${backendPort}/spotify/trigger_complete_data_retrieval`, {
           method: 'GET',
           headers: {}
         })
