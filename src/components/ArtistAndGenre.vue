@@ -135,10 +135,10 @@ export default {
     };
   },
   async created() {
+    this.tracks = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/tracks`)
     const response = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/artists_and_genres`)
     this.genres = response.genres;
     this.artists = response.artists;
-    this.tracks = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/tracks`)
     this.followedArtists = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/followed_artists`)
   },
   computed: {
