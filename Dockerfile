@@ -15,7 +15,6 @@ COPY vite.config.js .
 RUN npm install
 RUN npm run build
 
-
 # Expose the port that your app will run on
 EXPOSE 5173
 
