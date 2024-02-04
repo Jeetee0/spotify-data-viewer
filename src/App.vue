@@ -65,7 +65,7 @@
                        @open-playlist-detail-component-in-app="showPlaylistDetailComponent"></PlaylistState>
         <UserData v-if="showUserData"></UserData>
         <PlaylistDetail v-if="showPlaylistDetail" :playlistIdInit=this.selectedPlaylistId></PlaylistDetail>
-        <ArtistAndGenre v-if="showArtistAndGenre"></ArtistAndGenre>
+        <Lookup v-if="showArtistAndGenre"></Lookup>
         <Discover v-if="showDiscover"></Discover>
       </main>
     </div>
@@ -79,7 +79,7 @@ import DiffState from "@/components/DiffState.vue";
 import PlaylistState from "@/components/PlaylistState.vue";
 import UserData from "@/components/UserData.vue";
 import PlaylistDetail from "@/components/PlaylistDetail.vue";
-import ArtistAndGenre from "@/components/ArtistAndGenre.vue"
+import Lookup from "@/components/Lookup.vue"
 import Discover from "@/components/Discover.vue"
 import {infoText} from "@/assets/infoText.js";
 
@@ -100,7 +100,7 @@ export default {
     };
   },
   components: {
-    ArtistAndGenre,
+    Lookup,
     PlaylistDetail,
     DiffState,
     PlaylistState,
