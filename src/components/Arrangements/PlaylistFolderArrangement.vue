@@ -1,6 +1,8 @@
 <template>
     <div>
-      <playlist-arrangement-view v-for="(playlists, key) in playlistsWithFolders" :key="key" :folderName="key" :playlists="playlists" @open-playlist-detail-component="openPlaylistDetail"></playlist-arrangement-view>
+      <playlist-arrangement-view v-for="(playlists, key) in playlistsWithFolders" 
+        :key="key" :folderName="key" :playlists="playlists" @open-playlist-detail-component="openPlaylistDetail">
+      </playlist-arrangement-view>
     </div>
   </template>
   

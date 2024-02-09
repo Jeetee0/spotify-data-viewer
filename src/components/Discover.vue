@@ -617,6 +617,10 @@ export default {
   border-color: #2c3e50;
 }
 
+#discover-div {
+  overflow-x: auto;
+}
+
 #prepare-request-div {
   display: flex;
   flex-direction: row;

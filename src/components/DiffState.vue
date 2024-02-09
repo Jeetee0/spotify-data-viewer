@@ -10,7 +10,7 @@
     </div>
     <div class="bottom-line-div"></div>
     <div id="playlist-view-div">
-      <playlist-folder-arrangement :playlistsWithFolders="playlistData" :renderExtendedDiv="true"
+      <playlist-folder-arrangement :playlistsWithFolders="playlistData"
                                    @open-playlist-detail-component="openPlaylistDetail"/>
     </div>
   </div>

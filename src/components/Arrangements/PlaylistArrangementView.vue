@@ -6,15 +6,13 @@
       <img v-if="collapsed" @mouseover="collapseCursor(true)" @mouseout="collapseCursor(false)" @click="toggleCollapse" src="../../assets/maximize.png" alt="maximize" style="height: 18px; width: 18px; margin-top: 12px; margin-left: 10px">
     </div>
       <div class="collapsible-content" v-if="!collapsed" style="padding-left: 15px;">
-        <div class="playlist-div" v-for="(tracks, playlistName) in playlists" :key="playlistName">
+        <div v-for="(tracks, playlistName) in playlists" :key="playlistName"
+              :class="{ 'playlist-div-last-item': index === playlists.length - 1, 'playlist-div': index !== playlists.length - 1 }">
           <div style="padding: 5px 15px; max-width: 400px;" @click="openPlaylistDetail(playlistName, $event)" @mouseover="handlePlaylistNameMouseOver(true)" @mouseout="handlePlaylistNameMouseOut(false)">
             <h2 style="font-weight: bold; display: inline-block; text-decoration: underline;">{{ playlistName }}</h2>
             <img src="../icons/link-icon.png" alt="Link Icon" class="link-icon" style="width: 12px; height: 12px; margin-left: 5px">
           </div>
-          <track-arrangement-view :tracks="Object.fromEntries(Object.entries(tracks).slice(0, 14))" :discoverMode="false"></track-arrangement-view>
-    <!--       <div class="more-track-div" v-if="renderExtendedDiv" @click="openPlaylistDetail(playlistName, $event)" @mouseover="handlePlaylistNameMouseOver" @mouseout="handlePlaylistNameMouseOut">. . .
-          </div> -->
-
+          <track-arrangement-view :tracks="tracks" :discoverMode="false"></track-arrangement-view>
         </div>
       </div>
 
@@ -32,10 +30,6 @@ export default {
   props: {
     playlists: Object,
     folderName: String,
-    renderExtendedDiv: {
-      type: Boolean,
-      required: false,
-    },
   },
   data() {
     return {
@@ -102,6 +96,10 @@ export default {
   border-width: 2px;
   border-color: #2c3e50;
 }
+.playlist-div-last-item {
+  margin: 5px 0px;
+}
+
 .more-track-div {
   flex: 0 0 calc(9.5% - 5px); /* Adjust the width as needed*/
   box-sizing: border-box;

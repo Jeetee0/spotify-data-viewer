@@ -7,10 +7,9 @@
         <input type="number" id="quantity" v-model="stateAmount" min="1" max="10" width="100px"
                style="margin: 5px 15px; max-width: 50px;">
       </div>
-      <p>Showing last 10 tracks added to playlist</p>
     </div>
     <div id="playlist-view-div">
-      <playlist-folder-arrangement :playlistsWithFolders="playlistData" :renderExtendedDiv="true"
+      <playlist-folder-arrangement :playlistsWithFolders="playlistData"
                                    @open-playlist-detail-component="openPlaylistDetail"/>
     </div>
   </div>
@@ -36,9 +35,7 @@ export default {
     };
   },
   async created() {
-    console.log(this.latestPlaylistState)
     this.playlistData = this.latestPlaylistState
-    //await this.getLatestPlaylistStates()
   },
   watch: {
     stateAmount(newValue) {
@@ -63,7 +60,6 @@ export default {
         newPlaylistData[folder][name] = await this.getSpotifyTracksByIdList(trackString);
       }
       this.playlistData = newPlaylistData;
-      console.log(this.playlistData)
     },
     openPlaylistDetail(playlistName) {
       for (const playlistId in this.playlists) {

@@ -1,12 +1,5 @@
 <template>
   <div id="wrapper">
-    <div id="header">
-      <img src="./assets/spotify.svg" alt="Spotify Logo"
-           style="height: 50px; width: 50px; border-radius: 15px; margin-right: 15px">
-      <h1 style="font-weight: bold; font-size: 42px">Spotify Library Management</h1>
-      <img src="./assets/KELogo.png" alt="KE Logo"
-           style="height: 50px; width: 50px; border-radius: 15px; margin-right: 15px; margin-left: 15px">
-    </div>
     <div id="body">
       <div id="navigation-bar-div" :class="{ 'disabled': isContentDisabled }" >
         <h3 style="font-weight: bold; padding-left: 6px;">General</h3>
@@ -27,6 +20,13 @@
       </div>
       <main>
         <div v-if="showInfoText" style="color: black; padding: 5px 15px;">
+          <div id="title-div">
+            <img src="./assets/spotify.svg" alt="Spotify Logo"
+                style="height: 50px; width: 50px; border-radius: 15px; margin-right: 15px">
+            <h1 style="font-weight: bold; font-size: 42px">Spotify Library Management</h1>
+            <img src="./assets/KELogo.png" alt="KE Logo"
+                style="height: 50px; width: 50px; border-radius: 15px; margin-right: 15px; margin-left: 15px">
+          </div>
           <div style="display: flex; flex-direction: row;">
             <div style="width: 30%;">
               <h1 style="font-weight: bold;">Info</h1>
@@ -263,13 +263,12 @@ export default {
   overflow: hidden;
 }
 
-#header {
+#title-div {
   display: flex;
-  height: 100px;
   justify-content: center;
   align-items: center;
   color: black;
-  padding: 15px 0;
+  padding: 10px 0;
 
   border-bottom-style: solid;
   border-width: 2px;
@@ -277,7 +276,7 @@ export default {
 }
 
 #body {
-  flex: 1;
+  width: 100vw;
   display: flex;
   flex-direction: row;
   overflow: hidden;

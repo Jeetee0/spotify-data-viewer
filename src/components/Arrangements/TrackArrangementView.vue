@@ -2,9 +2,10 @@
   <div id="track-arrangement-div">
     <div class="track-div" v-for="track in this.tracks" :key="track.id">
       <a v-if="!discoverMode" :href="track.spotify_url" target="_blank"><img :src="track.image_url" alt="Album Cover"
-                                                       style="height: 150px; width: 150px; border-radius: 15px"></a>
+          style="height: 150px; width: 150px; border-radius: 15px"></a>
 
-      <img v-if="discoverMode" class="track-image" :src="track.image_url" @click="playTrack(track)" alt="Album Cover" style="height: 150px; width: 150px; border-radius: 15px; margin-bottom: 8px;" @mouseover="handleTrackMouseOver" @mouseout="handleTrackMouseOut">
+      <img v-if="discoverMode" class="track-image" :src="track.image_url" @click="playTrack(track)" alt="Album Cover" 
+            style="height: 150px; width: 150px; border-radius: 15px; margin-bottom: 8px;" @mouseover="handleTrackMouseOver" @mouseout="handleTrackMouseOut">
       <div v-if="discoverMode" style="display: flex; justify-content: center; margin-bottom: 5px;">
         <button @click="addToPlaylist1(track.id)" style="font-size: 10px; display: flex; align-items: center; ">
           <img src="../icons/plus.png" alt="+" style="width: 10px; height: 10px; margin-right: 5px;" />
@@ -15,8 +16,8 @@
           downtempo
         </button>
       </div>
-      <h3><span style="font-weight: bold;">{{ track.name }}</span></h3>
-      <h4 style="margin-bottom: 15px">{{ track.artists.map(artist => artist.name).join(', ') }}</h4>
+      <h3><span style="font-weight: bold;">{{ sliceString(track.name) }}</span></h3>
+      <h4 style="margin-bottom: 15px">{{ sliceString(track.artists.map(artist => artist.name).join(', ')) }}</h4>
     </div>
   </div>
 
@@ -34,6 +35,12 @@ export default {
     }
   },
   methods: {
+    sliceString(input) {
+      if (input.length <= 50)
+        return input
+      else
+        return input.slice(0, 50) + '...'
+    },
     handleTrackMouseOver(){
       if (this.discoverMode)
         document.body.style.cursor = "pointer";
@@ -76,12 +83,13 @@ export default {
 #track-arrangement-div {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  overflow-x: auto;
 }
 .track-div {
   width: 170px;
-  box-sizing: border-box;
-  margin: 5px;
+  margin: 5px 0px;
+  padding: 0px 15px;
+
   text-align: center;
   font-size: 12px;
 }

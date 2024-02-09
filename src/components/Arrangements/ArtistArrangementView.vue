@@ -26,13 +26,14 @@ export default {
 #artist-arrangement-div {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  overflow-x: auto;
 }
 
 .artist-div {
   width: 170px;
-  box-sizing: border-box;
-  margin: 5px;
+  margin: 5px 0px;
+  padding: 0px 15px;
+
   text-align: center;
   font-size: 12px;
 }
