@@ -8,7 +8,7 @@
            style="height: 50px; width: 50px; border-radius: 15px; margin-right: 15px; margin-left: 15px">
     </div>
     <div id="body">
-      <div id="navigation-bar-div">
+      <div id="navigation-bar-div" :class="{ 'disabled': isContentDisabled }" >
         <h3 style="font-weight: bold; padding-left: 6px;">General</h3>
         <button @click="showArtistAndGenreComponent" :disabled="showArtistAndGenre">Lookup</button>
         <button @click="showDiscoverComponent" :disabled="showDiscover">Discover</button>
@@ -60,13 +60,14 @@
 
 
         </div>
-        <DiffState v-if="showDiff" @open-playlist-detail-component-in-app="showPlaylistDetailComponent"></DiffState>
-        <PlaylistState v-if="showPlaylistState"
+        <DiffState v-if="showDiff" :latestPlaylistState="latestPlaylistState"
+                       @open-playlist-detail-component-in-app="showPlaylistDetailComponent"></DiffState>
+        <PlaylistState v-if="showPlaylistState" :latestPlaylistState="latestPlaylistState"
                        @open-playlist-detail-component-in-app="showPlaylistDetailComponent"></PlaylistState>
         <UserData v-if="showUserData"></UserData>
         <PlaylistDetail v-if="showPlaylistDetail" :playlistIdInit=this.selectedPlaylistId></PlaylistDetail>
-        <Lookup v-if="showArtistAndGenre"></Lookup>
-        <Discover v-if="showDiscover"></Discover>
+        <Lookup v-if="showArtistAndGenre" :tracks="tracks" :artists="artists" :genres="genres"></Lookup>
+        <Discover v-if="showDiscover" :tracks="tracks" :artists="artists" :genres="genres"></Discover>
       </main>
     </div>
   </div>
@@ -88,6 +89,8 @@ export default {
   data() {
     return {
       infoTextContent: infoText,
+
+      isContentDisabled: true,
       showInfoText: true,
       showDiff: false,
       showPlaylistState: false,
@@ -97,6 +100,14 @@ export default {
       showArtistAndGenre: false,
       showDiscover: false,
       selectedPlaylistId: "",
+
+      tracks: [],
+      artists: [],
+      genres: [],
+      latestPlaylistState: {},
+
+      backendHost: import.meta.env.VITE_BACKEND_HOST,
+      backendPort: import.meta.env.VITE_BACKEND_PORT,
     };
   },
   components: {
@@ -107,7 +118,58 @@ export default {
     UserData,
     Discover
   },
+  async created() {
+    this.tracks = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/tracks`)
+    const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/artists_and_genres`)
+    this.genres = response.genres;
+    this.artists = response.artists;
+    await this.getLatestPlaylistState()
+    this.isContentDisabled = false;
+  },
   methods: {
+    async fetchData(url) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.error('Error fetching data:', error.message);
+        throw error;
+      }
+    },
+    async getLatestPlaylistState() {
+      const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/latest_playlist_states?amount=1`)
+      let newPlaylistData = {};
+      const playlists = response[0]['playlists']
+      this.playlists = playlists
+
+      for (const playlistId in playlists) {
+        const folder = playlists[playlistId]['folder']
+        if (!newPlaylistData.hasOwnProperty(folder)) {
+          newPlaylistData[folder] = {}
+        }
+
+        const name = playlists[playlistId]['name']
+        const trackString = playlists[playlistId]['track_ids'].join(",")
+        newPlaylistData[folder][name] = await this.getSpotifyTracksByIdList(trackString);
+      }
+      this.latestPlaylistState = newPlaylistData;
+    },
+    async getSpotifyTracksByIdList(track_ids) {
+      return await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/tracks_by_ids?ids=${track_ids}`)
+    },
+    enableNavigationButtons() {
+      this.showInfoText = false;
+      this.showDiff = true;
+      this.showPlaylistState = false;
+      this.showUserData = false;
+      this.showPlaylistDetail = false;
+      this.showArtistAndGenre = false;
+      this.showDiscover = false;
+    },
     showDiffComponent() {
       this.showInfoText = false;
       this.showDiff = true;
@@ -254,5 +316,10 @@ button {
   border-radius: 15px;
   padding: 15px 15px;
   display: inline-block;
+}
+
+.disabled {
+    pointer-events: none; /* Disable mouse events */
+    opacity: 0.5; /* Reduce opacity to visually indicate disabled state */
 }
 </style>

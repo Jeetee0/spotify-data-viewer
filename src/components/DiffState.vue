@@ -4,28 +4,36 @@
       <h1>{{ title }}</h1>
       <div style="display: flex; flex-direction: row; align-content: center; ">
         <p style="font-size: 14px">Amount of latest states combined:</p>
-        <input type="number" id="quantity" v-model="diffAmount" min="1" max="10" width="100px"
+        <input type="number" id="quantity" v-model="diffAmount" min="1" max="25" width="100px"
                style="max-width: 50px; margin-left: 20px">
       </div>
     </div>
     <div class="bottom-line-div"></div>
-    <playlist-arrangement-view :playlists="playlistData" :folderName="'diff'" :renderExtendedDiv="false"
-                               @open-playlist-detail-component="openPlaylistDetail"/>
+    <div id="playlist-view-div">
+      <playlist-folder-arrangement :playlistsWithFolders="playlistData" :renderExtendedDiv="true"
+                                   @open-playlist-detail-component="openPlaylistDetail"/>
+    </div>
   </div>
 </template>
 
 <script>
-import PlaylistArrangementView from "@/components/Arrangements/PlaylistArrangementView.vue";
+import PlaylistFolderArrangement from "@/components/Arrangements/PlaylistFolderArrangement.vue";
 
 export default {
   components: {
-    PlaylistArrangementView
+    PlaylistFolderArrangement
+  },
+  props: {
+    latestPlaylistState: Object,
   },
   data() {
     return {
       title: 'Playlist diff - Newly fetched tracks from Spotify state',
       playlistData: {},
-      diffAmount: 3,
+      diffAmount: 5,
+
+      backendHost: import.meta.env.VITE_BACKEND_HOST,
+      backendPort: import.meta.env.VITE_BACKEND_PORT,
     };
   },
   async created() {
@@ -38,9 +46,7 @@ export default {
   },
   methods: {
     async getLatestDiffs() {
-      const backendHost = import.meta.env.VITE_BACKEND_HOST;
-      const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      const response = await this.fetchData(`${backendHost}:${backendPort}/spotify/latest_diff_states?amount=${this.diffAmount}`)
+      const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/latest_diff_states?amount=${this.diffAmount}`)
       // combine newTracks and playlists
       let result = {}
       for (const diffStateId in response) {
@@ -56,6 +62,13 @@ export default {
 
       let newPlaylistData = {};
 
+      let playlistNameFolderNameMatchingDict = {};
+      for (const folderName in this.latestPlaylistState) {
+        for (const playlistName in this.latestPlaylistState[folderName]) {
+          playlistNameFolderNameMatchingDict[playlistName] = folderName
+        }
+      }
+
       for (const playlistName in result) {
         if (result.hasOwnProperty(playlistName)) {
           const trackIdsInPlaylist = result[playlistName];
@@ -64,15 +77,19 @@ export default {
             trackString += trackIdsInPlaylist[spot_id] + ","
           }
           trackString = trackString.slice(0, -1);
-          newPlaylistData[playlistName] = await this.getSpotifyTracksByIdList(trackString);
+          const folderName = playlistNameFolderNameMatchingDict[playlistName]
+
+          if (!newPlaylistData.hasOwnProperty(folderName)) {
+            newPlaylistData[folderName] = {}
+          }
+          newPlaylistData[folderName][playlistName] = await this.getSpotifyTracksByIdList(trackString);
         }
       }
       this.playlistData = newPlaylistData;
+      console.log(this.playlistData)
     },
     async openPlaylistDetail(playlistName) {
-      const backendHost = import.meta.env.VITE_BACKEND_HOST;
-      const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      const response = await this.fetchData(`${backendHost}:${backendPort}/spotify/latest_playlist_states?amount=${1}`)
+      const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/latest_playlist_states?amount=${1}`)
       const playlists = response[0]['playlists']
       for (const playlistId in playlists) {
         if (playlists[playlistId]['name'] === playlistName) {
@@ -95,9 +112,7 @@ export default {
       }
     },
     async getSpotifyTracksByIdList(track_ids) {
-      const backendHost = import.meta.env.VITE_BACKEND_HOST;
-      const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      return await this.fetchData(`${backendHost}:${backendPort}/spotify/tracks_by_ids?ids=${track_ids}`)
+      return await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/tracks_by_ids?ids=${track_ids}`)
     },
   },
 };

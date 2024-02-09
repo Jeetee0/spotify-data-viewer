@@ -7,7 +7,7 @@
     </div>
       <div class="collapsible-content" v-if="!collapsed" style="padding-left: 15px;">
         <div class="playlist-div" v-for="(tracks, playlistName) in playlists" :key="playlistName">
-          <div style="padding: 5px 15px;" @click="openPlaylistDetail(playlistName, $event)" @mouseover="handlePlaylistNameMouseOver(true)" @mouseout="handlePlaylistNameMouseOut(false)">
+          <div style="padding: 5px 15px; max-width: 400px;" @click="openPlaylistDetail(playlistName, $event)" @mouseover="handlePlaylistNameMouseOver(true)" @mouseout="handlePlaylistNameMouseOut(false)">
             <h2 style="font-weight: bold; display: inline-block; text-decoration: underline;">{{ playlistName }}</h2>
             <img src="../icons/link-icon.png" alt="Link Icon" class="link-icon" style="width: 12px; height: 12px; margin-left: 5px">
           </div>

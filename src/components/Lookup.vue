@@ -107,12 +107,13 @@ import TrackFeatures from "@/components/TrackFeatures.vue";
 
 export default {
   components: {TrackFeatures, ArtistArrangementView, TrackArrangementView},
+  props: {
+    tracks: Object,
+    genres: Object,
+    artists: Object,
+  },
   data() {
     return {
-      artists: [],
-      genres: [],
-
-      tracks: [],
       trackFilter: "",
       trackSelected: "",
       trackFeatures: {},
@@ -135,10 +136,6 @@ export default {
     };
   },
   async created() {
-    this.tracks = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/tracks`)
-    const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/artists_and_genres`)
-    this.genres = response.genres;
-    this.artists = response.artists;
     this.followedArtists = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/followed_artists`)
   },
   computed: {
@@ -169,7 +166,6 @@ export default {
         this.showSingleArtist = false;
         this.selectedArtist = null;
       } else {
-        //const response = await this.fetchData(`http://${this.backendHost}:${this.backendPort}/spotify/artist_by_id?artist_id=${selectedArtist.id}`)
         this.selectedArtist = selectedArtist
         this.showSingleArtist = true
         this.artistTracks = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/artist_top_tracks?artist_id=${selectedArtist.id}`)
@@ -182,7 +178,16 @@ export default {
       this.chosenArtist = selectedArtist;
     },
     async getArtistsForGenre(genre) {
-      this.artistsForGenre = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/artists_for_genre?genre=${genre}`)
+      let matched_artists = []
+      for (const artistId in this.artists) {
+        const artist = this.artists[artistId]
+        if (artist.hasOwnProperty('genres') && artist.genres.includes(genre)) {
+          matched_artists.push(artist)
+        }
+      }
+      this.artistsForGenre = matched_artists
+
+
     },
     async fetchData(url) {
       try {

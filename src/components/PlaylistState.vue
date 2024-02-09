@@ -21,16 +21,24 @@ import PlaylistFolderArrangement from "@/components/Arrangements/PlaylistFolderA
 
 export default {
   components: {PlaylistFolderArrangement},
+  props: {
+    latestPlaylistState: Object,
+  },
   data() {
     return {
       title: 'Playlist state - Exported playlist state from spotify',
       stateAmount: 1,
       playlists: [],
       playlistData: {},
+
+      backendHost: import.meta.env.VITE_BACKEND_HOST,
+      backendPort: import.meta.env.VITE_BACKEND_PORT,
     };
   },
   async created() {
-    await this.getLatestPlaylistStates()
+    console.log(this.latestPlaylistState)
+    this.playlistData = this.latestPlaylistState
+    //await this.getLatestPlaylistStates()
   },
   watch: {
     stateAmount(newValue) {
@@ -39,9 +47,7 @@ export default {
   },
   methods: {
     async getLatestPlaylistStates() {
-      const backendHost = import.meta.env.VITE_BACKEND_HOST;
-      const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      const response = await this.fetchData(`${backendHost}:${backendPort}/spotify/latest_playlist_states?amount=${this.stateAmount}`)
+      const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/latest_playlist_states?amount=${this.stateAmount}`)
       let newPlaylistData = {};
       const playlists = response[this.stateAmount - 1]['playlists']
       this.playlists = playlists
@@ -57,6 +63,7 @@ export default {
         newPlaylistData[folder][name] = await this.getSpotifyTracksByIdList(trackString);
       }
       this.playlistData = newPlaylistData;
+      console.log(this.playlistData)
     },
     openPlaylistDetail(playlistName) {
       for (const playlistId in this.playlists) {
@@ -81,9 +88,7 @@ export default {
       }
     },
     async getSpotifyTracksByIdList(track_ids) {
-      const backendHost = import.meta.env.VITE_BACKEND_HOST;
-      const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      return await this.fetchData(`${backendHost}:${backendPort}/spotify/tracks_by_ids?ids=${track_ids}`)
+      return await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/tracks_by_ids?ids=${track_ids}`)
     },
   },
 };

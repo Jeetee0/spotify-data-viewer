@@ -267,12 +267,13 @@ export default {
   components: {
     TrackArrangementView, TrackFeatures
   },
+  props: {
+    tracks: Object,
+    genres: Object,
+    artists: Object,
+  },
   data() {
     return {
-      genres: {},
-      artists: {},
-      tracks: {},
-
       selectedTrack: null,
       showSelectedTrack: false,
       trackFeatures: {},
