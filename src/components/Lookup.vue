@@ -1,22 +1,21 @@
 <template>
   <div id="container">
-    <div id="track-lookup-div">
+    <div id="track-lookup-div" style="padding: 10px 15px;">
       <h1>Get track info</h1>
       <label for="trackSelect" style="padding-top: 6px">Select track ({{ Object.keys(tracks).length }}):</label>
-      <input v-model="trackFilter" placeholder="Type to filter tracks" style="width: 200px;"/>
+      <input v-model="trackFilter" placeholder="Type to filter tracks" style="width: 250px;" />
       <select v-model="trackSelected" id="trackSelect" name="track"
-              style="height: 30px; width: 250px; resize: none; margin-bottom: 15px;">
+        style="height: 30px; width: 250px; resize: none; margin-bottom: 15px;">
         <option v-for="track in filteredTracks" :key="track.id" :value="track">
-          <!--                <span>{{ track.name }}</span> - <span style="text-align: right">{{ track.b }}</span>-->
           {{ track.name }} -
           {{ track.artists.map(artist => artist.name).join(', ') }}
         </option>
       </select>
 
-      <div id="selected-track-div" v-if="trackSelected" >
-        <div id="track-basic-info-div" style="padding: 15px 15px">
+      <div id="selected-track-div" v-if="trackSelected">
+        <div id="track-basic-info-div" style="padding: 10px 15px">
           <a :href="trackSelected.spotify_url" target="_blank"><img :src="trackSelected.image_url" alt="Album Cover"
-                                                                    style="height: 150px; width: 150px; border-radius: 15px"></a>
+              style="height: 150px; width: 150px; border-radius: 15px"></a>
           <h3><span style="font-weight: bold;">{{ trackSelected.name }}</span></h3>
           <h4 style="margin-bottom: 15px">{{ trackSelected.artists.map(artist => artist.name).join(', ') }}</h4>
         </div>
@@ -26,25 +25,26 @@
         <div style="padding: 15px 15px">
           <h2>Artists for track:</h2>
           <artist-arrangement-view style="padding: 5px 15px;" :artists="this.artistsForTrack"
-                                   @open-artist-view="selectArtist"></artist-arrangement-view>
+            @open-artist-view="selectArtist"></artist-arrangement-view>
         </div>
-
       </div>
-
-
     </div>
-    <div id="artist-view-div">
-      <h1>Get artist info</h1>
-      <h4>Select an artist ({{ Object.keys(artists).length }}):</h4>
-      <select v-model="chosenArtist" id="artistSelect" name="artist" style="width: 225px">
-        <option v-for="artist in artists" :key="artist.id" :value="artist">{{ artist.name }}</option>
-      </select>
-      <br>
-      <div class="row-div" v-if="chosenArtist">
-        <div v-if="showSingleArtist" style="width: 320px">
+
+    <div class="bottom-line-div"></div>
+
+    <div id="artist-view-div" style="padding: 10px 15px; display: flex; flex-direction: row;">
+      <div>
+        <h1>Get artist info</h1>
+        <h4>Select an artist ({{ Object.keys(artists).length }}):</h4>
+        <input v-model="artistFilter" placeholder="Type to filter artists" style="width: 250px;" /><br>
+        <select v-model="chosenArtist" id="artistSelect" name="artist" style="width: 250px; height: 30px;">
+          <option v-for="artist in filteredArtists" :key="artist.id" :value="artist">{{ artist.name }}</option>
+        </select>
+
+        <div v-if="showSingleArtist" style="width: 320px; padding-top: 15px;">
           <h2 style="font-weight: bold">{{ selectedArtist.name }}</h2>
           <a :href="selectedArtist.spotify_url" target="_blank"><img :src="selectedArtist.image_url" alt="Album Cover"
-                                                                     style="height: 200px; width: 200px; border-radius: 15px"></a>
+              style="height: 200px; width: 200px; border-radius: 15px"></a>
 
           <div class="row-div" style="max-width: 220px;">
             <div>
@@ -61,43 +61,53 @@
             </div>
           </div>
         </div>
-        <div>
-          <h2 style="">Artist Top Tracks</h2>
-          <track-arrangement-view
-              :tracks="Object.fromEntries(Object.entries(artistTracks).slice(0, 5))"></track-arrangement-view>
-          <h2 style="">Similar Artists</h2>
-          <artist-arrangement-view :artists="Object.fromEntries(Object.entries(relatedArtists).slice(0, 5))"
-                                   @open-artist-view="selectArtist"></artist-arrangement-view>
-        </div>
-        <div>
-
-        </div>
+      </div>
+      <div v-if="chosenArtist" style="padding-left: 15px;">
+        <h2 style="">Artist Top Tracks</h2>
+        <track-arrangement-view :tracks="Object.fromEntries(Object.entries(artistTracks).slice(0, 5))"
+          @track-clicked="trackClicked"></track-arrangement-view>
+        <h2 style="">Similar Artists</h2>
+        <artist-arrangement-view :artists="Object.fromEntries(Object.entries(relatedArtists).slice(0, 5))"
+          @open-artist-view="selectArtist"></artist-arrangement-view>
       </div>
 
+      <br>
 
     </div>
-    <div id="genre-view-div">
+
+    <div class="bottom-line-div"></div>
+
+    <div id="genre-view-div" style="padding: 10px 15px;">
       <h1>Find artists by genre</h1>
       <div id="genre-selector-div" style="padding-bottom: 15px;">
         <h4>Select a spotify genre ({{ genres.length }}):</h4>
-        <input v-model="genreFilter" placeholder="Type to filter genre"/><br>
-        <select v-model="selectedGenre" id="genreSelect" name="genre" style="width: 250px;">
+        <input v-model="genreFilter" placeholder="Type to filter genre" style="width: 250px;" /><br>
+        <select v-model="selectedGenre" id="genreSelect" name="genre" style="width: 250px; height: 30px;">
           <option v-for="genre in filteredGenres" :key="genre" :value="genre">{{ genre }}</option>
         </select>
       </div>
 
-      <artist-arrangement-view :artists="this.artistsForGenre"
-                               @open-artist-view="selectArtist"></artist-arrangement-view>
+      <artist-arrangement-view :artists="artistsForGenre" @open-artist-view="selectArtist"></artist-arrangement-view>
+
     </div>
-    <div>
-      <h1 style="padding: 5px 15px;">Followed artists</h1>
-      <artist-arrangement-view style="padding: 5px 15px;" :artists="this.followedArtists"
-                               @open-artist-view="selectArtist"></artist-arrangement-view>
+
+    <div class="bottom-line-div"></div>
+
+    <div style="padding: 10px 15px;">
+      <h1>Artists with highest popularity</h1>
+      <artist-arrangement-view :artists="highestPopularityArtists"
+        @open-artist-view="selectArtist"></artist-arrangement-view>
+    </div>
+
+    <div class="bottom-line-div"></div>
+
+    <div style="padding: 10px 15px;">
+      <h1>Artists with most followers</h1>
+      <artist-arrangement-view :artists="mostFollowersArtists" @open-artist-view="selectArtist"></artist-arrangement-view>
     </div>
 
 
   </div>
-
 </template>
 
 <script>
@@ -106,7 +116,7 @@ import TrackArrangementView from '@/components/Arrangements/TrackArrangementView
 import TrackFeatures from "@/components/TrackFeatures.vue";
 
 export default {
-  components: {TrackFeatures, ArtistArrangementView, TrackArrangementView},
+  components: { TrackFeatures, ArtistArrangementView, TrackArrangementView, ArtistArrangementView },
   props: {
     tracks: Object,
     genres: Object,
@@ -119,13 +129,15 @@ export default {
       trackFeatures: {},
       artistsForTrack: [],
 
+      artistFilter: "",
       artistTracks: [],
       relatedArtists: [],
-      followedArtists: [],
+      highestPopularityArtists: [],
+      mostFollowersArtists: [],
 
+      genreFilter: "",
       artistsForGenre: [],
       selectedGenre: "",
-      genreFilter: "",
 
       showSingleArtist: false,
       chosenArtist: null,
@@ -136,7 +148,9 @@ export default {
     };
   },
   async created() {
-    this.followedArtists = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/followed_artists`)
+    const result = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/highest_artist_stats`);
+    this.highestPopularityArtists = result.highest_popularity
+    this.mostFollowersArtists = result.most_followers
   },
   computed: {
     filteredGenres() {
@@ -148,8 +162,13 @@ export default {
       if (this.trackFilter === "")
         return this.tracks;
       return this.tracks.filter(track => track.name.toLowerCase().includes(this.trackFilter.toLowerCase()) ||
-          track.artists.map(artist => artist.name).join(', ').toLowerCase().includes(this.trackFilter.toLowerCase()));
+        track.artists.map(artist => artist.name).join(', ').toLowerCase().includes(this.trackFilter.toLowerCase()));
     },
+    filteredArtists() {
+      if (this.artistFilter === "")
+        return this.artists;
+      return this.artists.filter(artist => artist.name.toLowerCase().includes(this.artistFilter.toLowerCase()));
+    }
   },
   watch: {
     selectedGenre(newValue) {
@@ -176,6 +195,9 @@ export default {
   methods: {
     selectArtist(selectedArtist) {
       this.chosenArtist = selectedArtist;
+    },
+    trackClicked(track) {
+      this.trackSelected = track;
     },
     async getArtistsForGenre(genre) {
       let matched_artists = []
@@ -216,10 +238,6 @@ export default {
   flex-direction: column;
 
   padding: 10px 15px;
-
-  border-bottom-style: solid;
-  border-width: 2px;
-  border-color: #2c3e50;
 }
 
 #selected-track-div {
@@ -227,38 +245,9 @@ export default {
   flex-direction: row;
 }
 
-#artist-view-div {
-  padding: 10px 15px;
-
+.bottom-line-div {
   border-bottom-style: solid;
   border-width: 2px;
   border-color: #2c3e50;
 }
-
-#genre-view-div {
-  padding: 10px 15px;
-
-  border-bottom-style: solid;
-  border-width: 2px;
-  border-color: #2c3e50;
-}
-
-.artist-image {
-  transition: transform 0.3s ease-in-out;
-  height: 150px;
-  width: 150px;
-  border-radius: 15px
-}
-
-.artist-image:hover {
-  transform: scale(1.15);
-  z-index: 1;
-}
-
-.row-div {
-  display: flex;
-  flex-direction: row;
-}
-
-
 </style>

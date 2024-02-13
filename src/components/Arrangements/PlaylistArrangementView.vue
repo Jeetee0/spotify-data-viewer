@@ -8,7 +8,7 @@
       <div class="collapsible-content" v-if="!collapsed" style="padding-left: 15px;">
         <div v-for="(tracks, playlistName) in playlists" :key="playlistName"
               :class="{ 'playlist-div-last-item': index === playlists.length - 1, 'playlist-div': index !== playlists.length - 1 }">
-          <div style="padding: 5px 15px; max-width: 400px;" @click="openPlaylistDetail(playlistName, $event)" @mouseover="handlePlaylistNameMouseOver(true)" @mouseout="handlePlaylistNameMouseOut(false)">
+          <div style="padding: 10px 15px; max-width: 400px;" @click="openPlaylistDetail(playlistName, $event)" @mouseover="handlePlaylistNameMouseOver(true)" @mouseout="handlePlaylistNameMouseOut(false)">
             <h2 style="font-weight: bold; display: inline-block; text-decoration: underline;">{{ playlistName }}</h2>
             <img src="../icons/link-icon.png" alt="Link Icon" class="link-icon" style="width: 12px; height: 12px; margin-left: 5px">
           </div>

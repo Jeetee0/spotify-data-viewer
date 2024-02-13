@@ -1,78 +1,48 @@
 <template>
   <div id="wrapper">
     <div id="body">
-      <div id="navigation-bar-div" :class="{ 'disabled': isContentDisabled }" >
-        <h3 style="font-weight: bold; padding-left: 6px;">General</h3>
-        <button @click="showArtistAndGenreComponent" :disabled="showArtistAndGenre">Lookup</button>
-        <button @click="showDiscoverComponent" :disabled="showDiscover">Discover</button>
+      <div id="navigation-bar-div">
+        <div id="small-title-div">
+          <a href="https://soundcloud.com/kineticenergyberlin" title="Kinetic Energy @ Soundcloud" target="_blank">
+            <img src="./assets/KELogo.png" alt="KE Logo" style="height: 200px; width: 200px; border-radius: 15px;">
+          </a>
 
-        <div style="height: 50px;"></div>
+          <h2 style="font-weight: bold;">Spotify Library Management</h2>
+        </div>
+        <div id="navigation-buttons-div" :class="{ 'disabled': isContentDisabled }">
+          <h3 style="font-weight: bold; padding-left: 6px;">General</h3>
+          <button @click="showArtistAndGenreComponent" :disabled="showArtistAndGenre">Lookup</button>
+          <button @click="showDiscoverComponent" :disabled="showDiscover">Discover</button>
+          <button @click="showImportComponent" :disabled="showImport">Import</button>
 
-        <h3 style="font-weight: bold; padding-left: 6px;">KE Spotify Data</h3>
-        <button @click="showDiffComponent" :disabled="showDiff">Playlist Diff</button>
-        <button @click="showLatestPlaylistState" :disabled="showPlaylistState">Playlist State</button>
-        <button @click="showPlaylistDetailComponent" :disabled="showPlaylistDetail">Playlist Detail</button>
-        <button @click="showSpotifyUserData" :disabled="showUserData">Spotify user data</button>
+          <div style="height: 50px;"></div>
 
-        <button @click="exportSpotifyState" :disabled="disabledExport"
-                style="position: absolute; bottom: 0; margin: 15px 5px">Export current State
-        </button>
+          <h3 style="font-weight: bold; padding-left: 6px;">KE Spotify Data</h3>
+          <button @click="showDiffComponent" :disabled="showDiff">Playlist Diff</button>
+          <button @click="showLatestPlaylistState" :disabled="showPlaylistState">Playlist State</button>
+          <button @click="showPlaylistDetailComponent" :disabled="showPlaylistDetail">Playlist Detail</button>
+          <button @click="showSpotifyUserData" :disabled="showUserData">Spotify user data</button>
+
+          <button @click="exportSpotifyState" :disabled="disabledExport"
+            style="position: absolute; bottom: 0; margin: 15px 5px">Export current State
+          </button>
+        </div>
       </div>
       <main>
-        <div v-if="showInfoText" style="color: black; padding: 5px 15px;">
-          <div id="title-div">
-            <img src="./assets/spotify.svg" alt="Spotify Logo"
-                style="height: 50px; width: 50px; border-radius: 15px; margin-right: 15px">
-            <h1 style="font-weight: bold; font-size: 42px">Spotify Library Management</h1>
-            <img src="./assets/KELogo.png" alt="KE Logo"
-                style="height: 50px; width: 50px; border-radius: 15px; margin-right: 15px; margin-left: 15px">
-          </div>
-          <div style="display: flex; flex-direction: row;">
-            <div style="width: 30%;">
-              <h1 style="font-weight: bold;">Info</h1>
-              <p id="infoText" v-html="formattedInfoText"></p>
-            </div>
-            <div style="padding: 0px 45px; width: 70%;">
-              <h1 style="font-weight: bold;">DJ showcase</h1>
-              <h2 style="padding-top: 30px; padding-bottom: 10px;">Psychedelic Trance & FullOn Mixes</h2>
-              <iframe width="100%" height="350" scrolling="no" frameborder="no" allow="autoplay"
-                      src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/1117029487&color=%23ff5500&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&show_teaser=true"></iframe>
-              <div
-                  style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;">
-                <a href="https://soundcloud.com/kineticenergyberlin" title="Kinetic Energy" target="_blank"
-                   style="color: #cccccc; text-decoration: none;">Kinetic Energy</a> · <a
-                  href="https://soundcloud.com/kineticenergyberlin/sets/psytrance"
-                  title="Psychedelic Trance &amp; FullOn-Psy [~145]" target="_blank"
-                  style="color: #cccccc; text-decoration: none;">Psychedelic Trance &amp; FullOn-Psy [~145]</a></div>
+        <EntryPage v-if="showInfoText"></EntryPage>
 
-              <h2 style="padding-top: 30px; padding-bottom: 10px;">Happy Hard Trance, Techno Rave Playlist</h2>
-              <iframe width="100%" height="350" scrolling="no" frameborder="no" allow="autoplay"
-                      src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/1639749280&color=%23ff5500&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&show_teaser=true"></iframe>
-              <div
-                  style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;">
-                <a href="https://soundcloud.com/kineticenergyberlin" title="Kinetic Energy" target="_blank"
-                   style="color: #cccccc; text-decoration: none;">Kinetic Energy</a> · <a
-                  href="https://soundcloud.com/kineticenergyberlin/sets/summer-trance-happy-fast"
-                  title="Summer Trance (Happy & Fast)" target="_blank" style="color: #cccccc; text-decoration: none;">Summer
-                Trance (Happy & Fast)</a></div>
-            </div>
-          </div>
-
-
-        </div>
         <DiffState v-if="showDiff" :latestPlaylistState="latestPlaylistState"
-                       @open-playlist-detail-component-in-app="showPlaylistDetailComponent"></DiffState>
+          @open-playlist-detail-component-in-app="showPlaylistDetailComponent"></DiffState>
         <PlaylistState v-if="showPlaylistState" :latestPlaylistState="latestPlaylistState"
-                       @open-playlist-detail-component-in-app="showPlaylistDetailComponent"></PlaylistState>
+          @open-playlist-detail-component-in-app="showPlaylistDetailComponent"></PlaylistState>
         <UserData v-if="showUserData"></UserData>
         <PlaylistDetail v-if="showPlaylistDetail" :playlistIdInit=this.selectedPlaylistId></PlaylistDetail>
         <Lookup v-if="showArtistAndGenre" :tracks="tracks" :artists="artists" :genres="genres"></Lookup>
         <Discover v-if="showDiscover" :tracks="tracks" :artists="artists" :genres="genres"></Discover>
+        <Import v-if="showImport"></Import>
       </main>
     </div>
   </div>
-
-
 </template>
 
 <script>
@@ -82,15 +52,15 @@ import UserData from "@/components/UserData.vue";
 import PlaylistDetail from "@/components/PlaylistDetail.vue";
 import Lookup from "@/components/Lookup.vue"
 import Discover from "@/components/Discover.vue"
-import {infoText} from "@/assets/infoText.js";
+import Import from "@/components/Import.vue"
+import EntryPage from "@/components/EntryPage.vue"
 
 export default {
   name: "App",
   data() {
     return {
-      infoTextContent: infoText,
-
       isContentDisabled: true,
+
       showInfoText: true,
       showDiff: false,
       showPlaylistState: false,
@@ -99,6 +69,7 @@ export default {
       showPlaylistDetail: false,
       showArtistAndGenre: false,
       showDiscover: false,
+      showImport: false,
       selectedPlaylistId: "",
 
       tracks: [],
@@ -116,7 +87,10 @@ export default {
     DiffState,
     PlaylistState,
     UserData,
-    Discover
+    Discover,
+    Import,
+    EntryPage,
+    EntryPage
   },
   async created() {
     this.tracks = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/tracks`)
@@ -169,6 +143,7 @@ export default {
       this.showPlaylistDetail = false;
       this.showArtistAndGenre = false;
       this.showDiscover = false;
+      this.showImport = false;
     },
     showDiffComponent() {
       this.showInfoText = false;
@@ -178,6 +153,7 @@ export default {
       this.showPlaylistDetail = false;
       this.showArtistAndGenre = false;
       this.showDiscover = false;
+      this.showImport = false;
     },
     showLatestPlaylistState() {
       this.showInfoText = false;
@@ -187,6 +163,7 @@ export default {
       this.showPlaylistDetail = false;
       this.showArtistAndGenre = false;
       this.showDiscover = false;
+      this.showImport = false;
     },
     showSpotifyUserData() {
       this.showInfoText = false;
@@ -196,6 +173,7 @@ export default {
       this.showPlaylistDetail = false;
       this.showArtistAndGenre = false;
       this.showDiscover = false;
+      this.showImport = false;
     },
     showPlaylistDetailComponent(playlistId = "") {
       this.showInfoText = false;
@@ -206,6 +184,7 @@ export default {
       this.showPlaylistDetail = true;
       this.showArtistAndGenre = false;
       this.showDiscover = false;
+      this.showImport = false;
     },
     showArtistAndGenreComponent() {
       this.showInfoText = false;
@@ -215,6 +194,7 @@ export default {
       this.showPlaylistDetail = false;
       this.showArtistAndGenre = true;
       this.showDiscover = false;
+      this.showImport = false;
     },
     showDiscoverComponent() {
       this.showInfoText = false;
@@ -224,6 +204,17 @@ export default {
       this.showPlaylistDetail = false;
       this.showArtistAndGenre = false;
       this.showDiscover = true;
+      this.showImport = false;
+    },
+    showImportComponent() {
+      this.showInfoText = false;
+      this.showDiff = false;
+      this.showPlaylistState = false;
+      this.showUserData = false;
+      this.showPlaylistDetail = false;
+      this.showArtistAndGenre = false;
+      this.showDiscover = false;
+      this.showImport = true;
     },
     exportSpotifyState() {
       this.disabledExport = true;
@@ -234,23 +225,17 @@ export default {
           method: 'GET',
           headers: {}
         })
-            .then(response => {
-              response.json().then(res => alert(res));
-            })
-            .catch(err => {
-              console.error(err);
-            });
+          .then(response => {
+            response.json().then(res => alert(res));
+          })
+          .catch(err => {
+            console.error(err);
+          });
       } catch (error) {
         console.error("Error during exporting spotify state", error)
       }
     },
-  },
-  computed: {
-    formattedInfoText() {
-      return this.infoTextContent.replace(/\n/g, '<br>');
-    },
   }
-
 }
 </script>
 
@@ -265,10 +250,9 @@ export default {
 
 #title-div {
   display: flex;
-  justify-content: center;
   align-items: center;
   color: black;
-  padding: 10px 0;
+  padding-bottom: 15px;
 
   border-bottom-style: solid;
   border-width: 2px;
@@ -277,6 +261,7 @@ export default {
 
 #body {
   width: 100vw;
+  height: 100vw;
   display: flex;
   flex-direction: row;
   overflow: hidden;
@@ -309,16 +294,18 @@ button {
   margin: 6px 5px;
 }
 
-#infoText {
-  font-size: 18px;
-  background-color: #eeeeee;
-  border-radius: 15px;
-  padding: 15px 15px;
-  display: inline-block;
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
-.disabled {
-    pointer-events: none; /* Disable mouse events */
-    opacity: 0.5; /* Reduce opacity to visually indicate disabled state */
+#small-title-div {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding-bottom: 35px;
 }
 </style>

@@ -14,26 +14,26 @@
             <div style="display: flex; flex-direction: row; padding-top: 10px">
               <div id="seed-selection-div">
                 <label for="genreSelect">Select genre:</label>
-                <input v-model="genreFilter" placeholder="Type to filter genres"/>
+                <input v-model="genreFilter" placeholder="Type to filter genres" />
                 <select v-model="genreSelected" id="genreSelect" name="genre" :disabled="disableSeedInputs"
-                        style="height: 30px; width: 250px; resize: none">
+                  style="height: 30px; width: 250px; resize: none">
                   <option v-for="genreName in filteredGenres" :key="genreName" :value="genreName">{{
-                      genreName
-                    }}
+                    genreName
+                  }}
                   </option>
                 </select>
 
                 <label for="artistSelect" style="padding-top: 6px">Select artist:</label>
-                <input v-model="artistFilter" placeholder="Type to filter artists"/>
+                <input v-model="artistFilter" placeholder="Type to filter artists" />
                 <select v-model="artistSelected" id="artistSelect" name="artist" :disabled="disableSeedInputs"
-                        style="height: 30px; width: 250px; resize: none">
+                  style="height: 30px; width: 250px; resize: none">
                   <option v-for="artist in filteredArtists" :key="artist.id" :value="artist">{{ artist.name }}</option>
                 </select>
 
                 <label for="trackSelect" style="padding-top: 6px">Select track:</label>
-                <input v-model="trackFilter" placeholder="Type to filter tracks"/>
+                <input v-model="trackFilter" placeholder="Type to filter tracks" />
                 <select v-model="trackSelected" id="trackSelect" name="track" :disabled="disableSeedInputs"
-                        style="height: 30px; width: 250px; resize: none">
+                  style="height: 30px; width: 250px; resize: none">
                   <option v-for="track in filteredTracks" :key="track.id" :value="track">
                     <!--                <span>{{ track.name }}</span> - <span style="text-align: right">{{ track.b }}</span>-->
                     {{ track.name }} -
@@ -44,27 +44,24 @@
               <div id="seeds-chosen-div">
                 <label for="chosenGenres">Selected genres:</label>
                 <div style="display: flex; flex-direction: row; padding-bottom: 18px">
-                <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 225px; resize: none"
-                          v-model="chosenGenres"
-                          id="chosenGenres"/>
+                  <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 225px; resize: none"
+                    v-model="chosenGenres" id="chosenGenres" />
                   <button @click="resetChosenGenres" style="margin-left: 15px; width: 70px; font-weight: bold">Reset
                   </button>
                 </div>
 
                 <label for="chosenArtists">Selected artists:</label>
                 <div style="display: flex; flex-direction: row; padding-bottom: 18px">
-                <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 225px; resize: none"
-                          v-model="chosenArtists[1]"
-                          id="chosenArtists"/>
+                  <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 225px; resize: none"
+                    v-model="chosenArtists[1]" id="chosenArtists" />
                   <button @click="resetChosenArtists" style="margin-left: 15px; width: 70px; font-weight: bold">Reset
                   </button>
                 </div>
 
                 <label for="chosenTracks">Selected tracks:</label>
                 <div style="display: flex; flex-direction: row;">
-                <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 225px; resize: none"
-                          v-model="chosenTracks[1]"
-                          id="chosenTracks"/>
+                  <textarea disabled="true" rows="1" cols="1" style="height: 40px; width: 225px; resize: none"
+                    v-model="chosenTracks[1]" id="chosenTracks" />
                   <button @click="resetChosenTracks" style="margin-left: 15px; width: 70px; font-weight: bold">Reset
                   </button>
                 </div>
@@ -78,13 +75,13 @@
               <div class="single-parameter-div">
                 <label style="font-weight: bold" for="limit">Limit:</label>
                 <input class="parameter-input" v-model="limit" id="limit" type="number" min="1" max="100"
-                       @input="handleLimitInput('limit', 1, 100)"/>
+                  @input="handleLimitInput('limit', 1, 100)" />
                 <p style="font-size: 12px; width: 200px; margin-top: 4px;">Select the amount of recommended tracks for
                   the response (1-100):</p>
               </div>
               <div class="single-parameter-div">
                 <label for="market" style="font-weight: bold">Market:</label>
-                <input class="parameter-input" v-model="market" id="market" type="text"/>
+                <input class="parameter-input" v-model="market" id="market" type="text" />
                 <p style="font-size: 12px; width: 200px;">You can specify a market with an 'ISO 3166-1 alpha-2' country
                   code (eg. DE, EN, IN etc.):</p>
               </div>
@@ -93,27 +90,24 @@
               <div class="single-parameter-div">
                 <label for="min_tempo">Min Tempo (bpm):</label>
                 <input class="parameter-input" v-model="min_tempo" id="min_tempo" type="number" min="50" max="300"
-                       @input="handleLimitInput('min_tempo', 1, 300)"/>
+                  @input="handleLimitInput('min_tempo', 1, 300)" />
                 <label for="max_tempo">Max Tempo (bpm):</label>
                 <input class="parameter-input" v-model="max_tempo" id="max_tempo" type="number" min="50" max="300"
-                       @input="handleLimitInput('max_tempo', 1, 300)"/>
+                  @input="handleLimitInput('max_tempo', 1, 300)" />
                 <label for="target_tempo">Target Tempo (bpm):</label>
                 <input class="parameter-input" v-model="target_tempo" id="target_tempo" type="number" min="50" max="300"
-                       @input="handleLimitInput('target_tempo', 1, 300)"/>
+                  @input="handleLimitInput('target_tempo', 1, 300)" />
               </div>
               <div class="single-parameter-div">
                 <label for="min_energy">Min Energy (0 - 1):</label>
                 <input class="parameter-input" v-model="min_energy" id="min_energy" type="number" step="0.01" min="0"
-                       max="1"
-                       @input="handleLimitInput('min_energy', 0, 1)"/>
+                  max="1" @input="handleLimitInput('min_energy', 0, 1)" />
                 <label for="max_energy">Max Energy (0 - 1):</label>
                 <input class="parameter-input" v-model="max_energy" id="max_energy" type="number" step="0.01" min="0"
-                       max="1"
-                       @input="handleLimitInput('max_energy', 0, 1)"/>
+                  max="1" @input="handleLimitInput('max_energy', 0, 1)" />
                 <label for="target_energy">Target Energy (0 - 1):</label>
                 <input class="parameter-input" v-model="target_energy" id="target_energy" type="number" min="0"
-                       step="0.01"
-                       max="1" @input="handleLimitInput('target_energy', 0, 1)"/>
+                  step="0.01" max="1" @input="handleLimitInput('target_energy', 0, 1)" />
               </div>
 
             </div>
@@ -121,53 +115,48 @@
               <div class="single-parameter-div">
                 <label for="min_key">Min Key (0 - 11):</label>
                 <input class="parameter-input" v-model="min_key" id="min_key" type="number" min="0" max="100"
-                       @input="handleLimitInput('min_key', 0, 11)"/>
+                  @input="handleLimitInput('min_key', 0, 11)" />
                 <label for="max_key">Max Key (0 - 11):</label>
                 <input class="parameter-input" v-model="max_key" id="max_key" type="number" min="0" max="100"
-                       @input="handleLimitInput('max_key', 0, 11)"/>
+                  @input="handleLimitInput('max_key', 0, 11)" />
                 <label for="target_key">Target Key (0 - 11):</label>
-                <input class="parameter-input" v-model="target_key" id="target_key" type="number" min="0"
-                       max="100" @input="handleLimitInput('target_key', 0, 11)"/>
+                <input class="parameter-input" v-model="target_key" id="target_key" type="number" min="0" max="100"
+                  @input="handleLimitInput('target_key', 0, 11)" />
               </div>
               <div class="single-parameter-div">
                 <label for="min_mode">Min Mode (0 - 1):</label>
                 <input class="parameter-input" v-model="min_mode" id="min_mode" type="number" min="0" max="1"
-                       @input="handleLimitInput('min_mode', 0, 1)"/>
+                  @input="handleLimitInput('min_mode', 0, 1)" />
                 <label for="max_mode">Max Mode (0 - 1):</label>
                 <input class="parameter-input" v-model="max_mode" id="max_mode" type="number" min="0" max="1"
-                       @input="handleLimitInput('max_mode', 0, 1)"/>
+                  @input="handleLimitInput('max_mode', 0, 1)" />
                 <label for="target_mode">Target Mode (0 - 1):</label>
-                <input class="parameter-input" v-model="target_mode" id="target_mode" type="number" min="0"
-                       max="1" @input="handleLimitInput('target_mode', 0, 1)"/>
+                <input class="parameter-input" v-model="target_mode" id="target_mode" type="number" min="0" max="1"
+                  @input="handleLimitInput('target_mode', 0, 1)" />
               </div>
             </div>
             <div id="optional-4-div" style="margin-left: 5px; display: flex; flex-direction: column; min-width: 200px;">
               <div class="single-parameter-div">
                 <label for="min_popularity">Min Popularity (0 - 100):</label>
                 <input class="parameter-input" v-model="min_popularity" id="min_popularity" type="number" min="0"
-                       max="100"
-                       @input="handleLimitInput('min_popularity', 0, 100)"/>
+                  max="100" @input="handleLimitInput('min_popularity', 0, 100)" />
                 <label for="max_popularity">Max Popularity (0 - 100):</label>
                 <input class="parameter-input" v-model="max_popularity" id="max_popularity" type="number" min="0"
-                       max="100"
-                       @input="handleLimitInput('max_popularity', 0, 100)"/>
+                  max="100" @input="handleLimitInput('max_popularity', 0, 100)" />
                 <label for="target_popularity">Target Popularity (0 - 100):</label>
                 <input class="parameter-input" v-model="target_popularity" id="target_popularity" type="number" min="0"
-                       max="100" @input="handleLimitInput('target_popularity', 0, 100)"/>
+                  max="100" @input="handleLimitInput('target_popularity', 0, 100)" />
               </div>
               <div class="single-parameter-div">
                 <label for="min_danceability">Min Danceability (0 - 1):</label>
-                <input class="parameter-input" v-model="min_danceability" id="min_danceability" type="number"
-                       step="0.01" min="0" max="1"
-                       @input="handleLimitInput('min_danceability', 0, 1)"/>
+                <input class="parameter-input" v-model="min_danceability" id="min_danceability" type="number" step="0.01"
+                  min="0" max="1" @input="handleLimitInput('min_danceability', 0, 1)" />
                 <label for="max_danceability">Max Danceability (0 - 1):</label>
-                <input class="parameter-input" v-model="max_danceability" id="max_danceability" type="number"
-                       step="0.01" min="0" max="1"
-                       @input="handleLimitInput('max_danceability', 0, 1)"/>
+                <input class="parameter-input" v-model="max_danceability" id="max_danceability" type="number" step="0.01"
+                  min="0" max="1" @input="handleLimitInput('max_danceability', 0, 1)" />
                 <label for="target_danceability">Target Danceability (0 - 1):</label>
                 <input class="parameter-input" v-model="target_danceability" id="target_danceability" type="number"
-                       step="0.01" min="0"
-                       max="1" @input="handleLimitInput('target_danceability', 0, 1)"/>
+                  step="0.01" min="0" max="1" @input="handleLimitInput('target_danceability', 0, 1)" />
               </div>
             </div>
           </div>
@@ -175,29 +164,23 @@
 
         <div id="track-view-div" style="">
           <div style="display: flex; flex-direction: column; margin: 0px 20px;">
-            <button
-                style="font-size: 22px; height: 50px; width: 200px;"
-                @click="findTracks">Find tracks
+            <button style="font-size: 22px; height: 50px; width: 200px;" @click="findTracks">Find tracks
             </button>
-            <button
-                style="font-size: 16px; margin-top: 10px; height: 28px; width: 200px"
-                @click="resetAllParameters">Reset all parameters
+            <button style="font-size: 16px; margin-top: 10px; height: 28px; width: 200px"
+              @click="resetAllParameters">Reset all parameters
             </button>
           </div>
 
           <div v-if="showSelectedTrack"
-               style="display: flex; flex-direction: column; padding-top: 25px; padding-bottom: 20px; padding-left: 15px; border-left-style: solid; border-width: 2px; border-color: #2c3e50;">
+            style="display: flex; flex-direction: column; padding-top: 25px; padding-bottom: 20px; padding-left: 15px; border-left-style: solid; border-width: 2px; border-color: #2c3e50;">
             <div ref="spotifyPlayer" style=""></div>
             <div style="display: flex; flex-direction: row; margin: auto">
-              <button
-                  style="font-size: 14px; margin-right: 10px; height: 28px; width: 120px"
-                  @click="addToPlaylist(1)"><img src="./icons/plus.png" alt="+"
-                                                 style="width: 10px; height: 10px; margin-right: 5px;"/> uptempo
+              <button style="font-size: 14px; margin-right: 10px; height: 28px; width: 120px"
+                @click="addToPlaylist(1)"><img src="./icons/plus.png" alt="+"
+                  style="width: 10px; height: 10px; margin-right: 5px;" /> uptempo
               </button>
-              <button
-                  style="font-size: 14px; height: 28px; width: 120px"
-                  @click="addToPlaylist(2)"><img src="./icons/plus.png" alt="+"
-                                                 style="width: 10px; height: 10px; margin-right: 5px;"/> downtempo
+              <button style="font-size: 14px; height: 28px; width: 120px" @click="addToPlaylist(2)"><img
+                  src="./icons/plus.png" alt="+" style="width: 10px; height: 10px; margin-right: 5px;" /> downtempo
               </button>
             </div>
           </div>
@@ -227,9 +210,9 @@
       </div>
       <div id="key-info-div">
         <div style="display: flex; flex-direction: row;">
-          <div style="margin-right: 15px;">
+          <div style="margin-right: 15px; text-align: justify;">
             <h2 style="font-weight: bold;">Tonality info</h2>
-            <h3 style="width: 220px; text-align: justify;">The tonality is a combination of the two parameters 'key' and
+            <h3 style="width: 220px; ">The tonality is a combination of the two parameters 'key' and
               'mode'.
               'Mode' can either be 0 or 1 and defines minor or major. The 'key' parameter ranges from 0 - 11 and is in
               pitch class notation. You can check the image to the left to translate it into the key.
@@ -238,9 +221,9 @@
           </div>
 
           <img src="../assets/pitch_class.png" alt="camelot-wheel"
-               style="height: 452px; width: 214px; border-radius: 15px; margin: 25px 20px;">
+            style="height: 452px; width: 214px; border-radius: 15px; margin: 25px 20px;">
           <img src="../assets/camelot-wheel.png" alt="camelot-wheel"
-               style="height: 500px; width: 500px; border-radius: 15px; margin: 0px 0px">
+            style="height: 500px; width: 500px; border-radius: 15px; margin: 0px 0px">
 
 
         </div>
@@ -250,13 +233,11 @@
     <div id="track-results-div">
       <h2 style="font-weight: bold; padding-bottom: 10px;">Results</h2>
       <track-arrangement-view :tracks="this.recommendedTracks" :discoverMode="true"
-                              @play-track="playTrack"></track-arrangement-view>
+        @track-clicked="playTrack"></track-arrangement-view>
 
 
     </div>
   </div>
-
-
 </template>
 
 <script>
@@ -318,17 +299,13 @@ export default {
       target_danceability: null,
 
       recommendedTracks: [],
+      backendHost: import.meta.env.VITE_BACKEND_HOST,
+      backendPort: import.meta.env.VITE_BACKEND_PORT,
     };
   },
   async created() {
-    const backendHost = import.meta.env.VITE_BACKEND_HOST;
-    const backendPort = import.meta.env.VITE_BACKEND_PORT;
-    const response = await this.fetchData(`${backendHost}:${backendPort}/spotify/artists_and_genres`)
-    this.genres = response.genres;
-    this.artists = response.artists;
-    this.tracks = await this.fetchData(`${backendHost}:${backendPort}/spotify/tracks`)
-
-    this.loadExampleTrack('6desWeNyiLDZu3lKhckawg');
+    const randomNumber = Math.floor(Math.random() * (this.tracks.length))
+    await this.loadExampleTrack(this.tracks[randomNumber].id);
   },
   computed: {
     filteredGenres() {
@@ -345,17 +322,15 @@ export default {
       if (this.trackFilter === "")
         return this.tracks;
       return this.tracks.filter(track => track.name.toLowerCase().includes(this.trackFilter.toLowerCase()) ||
-          track.artists.map(artist => artist.name).join(', ').toLowerCase().includes(this.trackFilter.toLowerCase()));
+        track.artists.map(artist => artist.name).join(', ').toLowerCase().includes(this.trackFilter.toLowerCase()));
     },
   },
   methods: {
     async loadExampleTrack(trackId) {
-      const backendHost = import.meta.env.VITE_BACKEND_HOST;
-      const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      const url = `${backendHost}:${backendPort}/spotify/tracks_by_ids?ids=${trackId}`;
-      const response = await this.fetchData(url);
       this.showSelectedTrack = true;
-      this.playTrack(response[0]);
+      const url = `${this.backendHost}:${this.backendPort}/spotify/tracks_by_ids?ids=${trackId}`;
+      const response = await this.fetchData(url);
+      await this.playTrack(response[0]);
     },
     async addToPlaylist(playlistIndex) {
       const backendHost = import.meta.env.VITE_BACKEND_HOST;
@@ -363,7 +338,7 @@ export default {
       const url = `${backendHost}:${backendPort}/spotify/add_to_default_playlists?playlist_index=${playlistIndex}&track_id=${this.selectedTrack.id}`;
 
       try {
-        const response = await fetch(url, {method: 'POST',});
+        const response = await fetch(url, { method: 'POST', });
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -377,14 +352,11 @@ export default {
     async playTrack(track) {
       if (this.selectedTrack !== null && track.id === this.selectedTrack.id)
         return;
-      const backendHost = import.meta.env.VITE_BACKEND_HOST;
-      const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      const url = `${backendHost}:${backendPort}/spotify/track_features?track_id=${track.id}`
-      const response = await this.fetchData(url);
-      this.trackFeatures = response;
       this.selectedTrack = track;
       const spotifyPlayerContainer = this.$refs.spotifyPlayer;
       spotifyPlayerContainer.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${track.id}" width="500" height="155" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
+      const url = `${this.backendHost}:${this.backendPort}/spotify/track_features?track_id=${track.id}`
+      this.trackFeatures = await this.fetchData(url);
     },
     removeUnnecessaryChars(input) {
       input = input.trimEnd()
@@ -530,9 +502,6 @@ export default {
     },
     setTrack() {
       this.trackSelected = this.selectedTrack
-    },
-    sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
     },
     updateChosenArtists(chosenArtist) {
       if (chosenArtist !== "" && chosenArtist !== null) {

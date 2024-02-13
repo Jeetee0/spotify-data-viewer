@@ -1,26 +1,30 @@
 <template>
   <div id="track-arrangement-div">
     <div class="track-div" v-for="track in this.tracks" :key="track.id">
-      <a v-if="!discoverMode" :href="track.spotify_url" target="_blank"><img :src="track.image_url" alt="Album Cover"
-          style="height: 150px; width: 150px; border-radius: 15px"></a>
-
-      <img v-if="discoverMode" class="track-image" :src="track.image_url" @click="playTrack(track)" alt="Album Cover" 
-            style="height: 150px; width: 150px; border-radius: 15px; margin-bottom: 8px;" @mouseover="handleTrackMouseOver" @mouseout="handleTrackMouseOut">
-      <div v-if="discoverMode" style="display: flex; justify-content: center; margin-bottom: 5px;">
-        <button @click="addToPlaylist1(track.id)" style="font-size: 10px; display: flex; align-items: center; ">
-          <img src="../icons/plus.png" alt="+" style="width: 10px; height: 10px; margin-right: 5px;" />
-          uptempo
-        </button>
-        <button @click="addToPlaylist2(track.id)" style="font-size: 10px; display: flex; align-items: center; margin-left: 5px">
-          <img src="../icons/plus.png" alt="+" style="width: 10px; height: 10px; margin-right: 5px;" />
-          downtempo
-        </button>
+      <div>
+        <img class="track-image" :src="track.image_url" @click="trackClicked(track)" alt="Album Cover"
+          style="height: 150px; width: 150px; border-radius: 15px; margin-bottom: 0px;" @mouseover="handleTrackMouseOver"
+          @mouseout="handleTrackMouseOut">
+        <div v-if="discoverMode" style="display: flex; justify-content: center; margin-bottom: 5px;">
+          <button @click="addToPlaylist1(track.id)" style="font-size: 10px; display: flex; align-items: center; ">
+            <img src="../icons/plus.png" alt="+" style="width: 10px; height: 10px; margin-right: 5px;" />
+            uptempo
+          </button>
+          <button @click="addToPlaylist2(track.id)"
+            style="font-size: 10px; display: flex; align-items: center; margin-left: 5px">
+            <img src="../icons/plus.png" alt="+" style="width: 10px; height: 10px; margin-right: 5px;" />
+            downtempo
+          </button>
+        </div>
+        <h2><span style="font-weight: bold;">{{ sliceString(track.name) }}</span></h2>
+        <h3>{{ sliceString(track.artists.map(artist => artist.name).join(', ')) }}</h3>
+        <h4 style="margin-top: 5px;">Popularity: {{ track.popularity }}</h4>
+        <h4>Duration: {{ this.millisToMinutesAndSeconds(track.duration_ms) }}</h4>
       </div>
-      <h3><span style="font-weight: bold;">{{ sliceString(track.name) }}</span></h3>
-      <h4 style="margin-bottom: 15px">{{ sliceString(track.artists.map(artist => artist.name).join(', ')) }}</h4>
+
+      <button id="importButton" v-if="importButton" @click="importTrack(track)">Import</button>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -32,16 +36,30 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    importButton: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
+  },
+  data() {
+    return {
     }
   },
   methods: {
+    millisToMinutesAndSeconds(millis) {
+      var minutes = Math.floor(millis / 60000);
+      var seconds = ((millis % 60000) / 1000).toFixed(0);
+      return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+    },
     sliceString(input) {
       if (input.length <= 50)
         return input
       else
         return input.slice(0, 50) + '...'
     },
-    handleTrackMouseOver(){
+    handleTrackMouseOver() {
       if (this.discoverMode)
         document.body.style.cursor = "pointer";
     },
@@ -49,8 +67,11 @@ export default {
       if (this.discoverMode)
         document.body.style.cursor = "auto";
     },
-    playTrack(trackId) {
-      this.$emit('play-track', trackId)
+    trackClicked(track) {
+      this.$emit('track-clicked', track)
+    },
+    importTrack(track) {
+      this.$emit('import-track-clicked', track)
     },
     addToPlaylist1(trackId) {
       this.sendRequestToAdd(1, trackId)
@@ -64,7 +85,7 @@ export default {
       const url = `${backendHost}:${backendPort}/spotify/add_to_default_playlists?playlist_index=${playlistIndex}&track_id=${trackId}`;
 
       try {
-        const response = await fetch(url, {method: 'POST',});
+        const response = await fetch(url, { method: 'POST', });
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -85,13 +106,22 @@ export default {
   flex-direction: row;
   overflow-x: auto;
 }
+
 .track-div {
-  width: 170px;
+  width: 200px;
   margin: 5px 0px;
   padding: 0px 15px;
-
-  text-align: center;
   font-size: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+#importButton {
+  margin-top: 10px;
+  width: 80px;
+  height: 30px;
+  margin-top: auto;
+  margin-bottom: 5px;
 }
 
 .track-image {
@@ -99,7 +129,7 @@ export default {
 }
 
 .track-image:hover {
-    transform: scale(1.15);
-    z-index: 1;
+  transform: scale(1.15);
+  z-index: 1;
 }
 </style>
