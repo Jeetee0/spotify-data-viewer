@@ -2,15 +2,18 @@
   <div style="color: black;">
     <div id="info-selector-div">
       <h1>{{ title }}</h1>
-      <div style="display: flex; flex-direction: row; align-content: center; ">
+      <div style="display: flex; flex-direction: row; align-content: center;align-items: center; margin-bottom: 15px;">
         <p>Choose latest state:</p>
         <input type="number" id="quantity" v-model="stateAmount" min="1" max="10" width="100px"
-               style="margin: 5px 15px; max-width: 50px;">
+          style="width: 50px; height: 25px; margin-left: 10px; margin-right: 20px; ">
+        <p style="font-size: 14px">Export date:</p>
+        <input disabled="true" id="user-data-export-date" v-model="exportDate"
+          style="width: 100px; margin-left: 20px; margin-right: 20px; pointer-events: none;" />
       </div>
     </div>
     <div id="playlist-view-div">
       <playlist-folder-arrangement :playlistsWithFolders="playlistData"
-                                   @open-playlist-detail-component="openPlaylistDetail"/>
+        @open-playlist-detail-component="openPlaylistDetail" />
     </div>
   </div>
 </template>
@@ -19,23 +22,26 @@
 import PlaylistFolderArrangement from "@/components/Arrangements/PlaylistFolderArrangement.vue";
 
 export default {
-  components: {PlaylistFolderArrangement},
+  components: { PlaylistFolderArrangement },
   props: {
-    latestPlaylistState: Object,
+    accessToken: String
   },
   data() {
     return {
       title: 'Playlist state - Exported playlist state from spotify',
       stateAmount: 1,
+      exportDate: "",
+
       playlists: [],
       playlistData: {},
+      latestPlaylistState: {},
 
       backendHost: import.meta.env.VITE_BACKEND_HOST,
       backendPort: import.meta.env.VITE_BACKEND_PORT,
     };
   },
   async created() {
-    this.playlistData = this.latestPlaylistState
+    this.getLatestPlaylistStates(this.stateAmount);
   },
   watch: {
     stateAmount(newValue) {
@@ -46,6 +52,7 @@ export default {
     async getLatestPlaylistStates() {
       const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/latest_playlist_states?amount=${this.stateAmount}`)
       let newPlaylistData = {};
+      this.exportDate = response[this.stateAmount - 1]['created_at']['$date'].substring(0, 10)
       const playlists = response[this.stateAmount - 1]['playlists']
       this.playlists = playlists
 
@@ -60,6 +67,7 @@ export default {
         newPlaylistData[folder][name] = await this.getSpotifyTracksByIdList(trackString);
       }
       this.playlistData = newPlaylistData;
+
     },
     openPlaylistDetail(playlistName) {
       for (const playlistId in this.playlists) {
@@ -72,14 +80,17 @@ export default {
     },
     async fetchData(url) {
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`
+          }
+        });
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          throw new Error(`Error when requesting data. Status code: ${response.status}`);
         }
-
         return await response.json();
       } catch (error) {
-        console.error('Error fetching data:', error.message);
+        alert(error.message)
         throw error;
       }
     },

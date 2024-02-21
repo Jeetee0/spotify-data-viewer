@@ -4,7 +4,7 @@
       <h1>{{ title }}</h1>
       <label for="playlistId" style="margin-right: 15px">Spotify playlist ID:</label>
       <input v-model="playlistId" id="playlistId" placeholder="Enter playlist ID"
-             style="margin-right: 15px; min-width: 220px"/>
+        style="margin-right: 15px; min-width: 220px" />
       <button @click="fetchPlaylistData">Fetch Playlist</button>
     </div>
     <div class="bottom-line-div"></div>
@@ -15,15 +15,15 @@
         <div id="columns-div">
           <div style="padding: 10px">
             <a :href="playlist.spotify_url" target="_blank"><img :src="playlist.image_url" alt="Playlist Cover"
-                                                                 style="height: 200px; width: 200px; border-radius: 15px"></a>
+                style="height: 200px; width: 200px; border-radius: 15px"></a>
           </div>
           <div style="padding: 10px; max-width: 400px">
             <p><span style="font-weight: bold;">Owner:</span> {{ playlist.owner_id }}</p>
             <p><span style="font-weight: bold;">Number of Tracks:</span> {{ playlist.amount_of_tracks }}</p>
             <p><span style="font-weight: bold;">Folder:</span> {{ playlist.folder }}</p>
             <p><span style="font-weight: bold;">Unique Artists:</span> {{
-                playlist.genre_classification.unique_artists
-              }}</p>
+              playlist.genre_classification.unique_artists
+            }}</p>
             <p><span style="font-weight: bold;">Unique Genres:</span> {{ playlist.genre_classification.unique_genres }}
             </p>
             <p><span style="font-weight: bold;">Description:</span> {{ playlist.description }}</p>
@@ -31,8 +31,9 @@
           <div style="padding: 10px;">
             <h2>Genre Classification</h2>
             <ol class="bold-numbering">
-              <li v-for="(count, genre) in Object.fromEntries(Object.entries(playlist.genre_classification.genres).slice(0, 5))"
-                  :key="genre">
+              <li
+                v-for="(count, genre) in Object.fromEntries(Object.entries(playlist.genre_classification.genres).slice(0, 5))"
+                :key="genre">
                 {{ genre }}: {{ count }}
               </li>
             </ol>
@@ -40,8 +41,9 @@
           <div style="padding: 10px">
             <h2>Top Artists</h2>
             <ol class="bold-numbering">
-              <li v-for="(artist, id) in Object.fromEntries(Object.entries(playlist.genre_classification.artists).slice(0, 5))"
-                  :key="id">
+              <li
+                v-for="(artist, id) in Object.fromEntries(Object.entries(playlist.genre_classification.artists).slice(0, 5))"
+                :key="id">
                 {{ artist.name }} - {{ artist.amount }}
               </li>
             </ol>
@@ -82,6 +84,9 @@ export default {
       playlist: null,
       trackList: null,
       error: null,
+
+      backendHost: import.meta.env.VITE_BACKEND_HOST,
+      backendPort: import.meta.env.VITE_BACKEND_PORT,
     };
   },
   async created() {
@@ -99,9 +104,7 @@ export default {
         return;
 
       try {
-        const backendHost = import.meta.env.VITE_BACKEND_HOST;
-        const backendPort = import.meta.env.VITE_BACKEND_PORT;
-        const response = await this.fetchData(`${backendHost}:${backendPort}/spotify/playlists_by_ids?ids=${this.playlistId}`);
+        const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/playlists_by_ids?ids=${this.playlistId}`);
 
         // Update the component's data with the fetched playlist
         this.playlist = response[0];
@@ -126,19 +129,16 @@ export default {
       try {
         const response = await fetch(url);
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          throw new Error(`Error when requesting data. Status code: ${response.status}`);
         }
-
         return await response.json();
       } catch (error) {
-        console.error('Error fetching data:', error.message);
+        alert(error.message)
         throw error;
       }
     },
     async getSpotifyTracksByIdList(track_ids) {
-      const backendHost = import.meta.env.VITE_BACKEND_HOST;
-      const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      return await this.fetchData(`${backendHost}:${backendPort}/spotify/tracks_by_ids?ids=${track_ids}`)
+      return await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/tracks_by_ids?ids=${track_ids}`)
     },
     getArtistsNames(artists) {
       return artists.map(artist => artist.name).join(', ');
@@ -166,8 +166,10 @@ export default {
 }
 
 .bold-numbering {
-  list-style-type: none; /* Remove default list styling */
-  counter-reset: my-counter; /* Reset the counter for custom numbering */
+  list-style-type: none;
+  /* Remove default list styling */
+  counter-reset: my-counter;
+  /* Reset the counter for custom numbering */
 }
 
 .bold-numbering li {
@@ -175,8 +177,11 @@ export default {
 }
 
 .bold-numbering li::before {
-  content: counter(my-counter); /* Use the counter value as content */
-  font-weight: bold; /* Make the numbering bold */
-  margin-right: 5px; /* Optional: Add some spacing between the numbering and text */
+  content: counter(my-counter);
+  /* Use the counter value as content */
+  font-weight: bold;
+  /* Make the numbering bold */
+  margin-right: 5px;
+  /* Optional: Add some spacing between the numbering and text */
 }
 </style>

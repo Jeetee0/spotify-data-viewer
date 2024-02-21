@@ -5,13 +5,13 @@
       <div style="display: flex; flex-direction: row; align-content: center; ">
         <p style="font-size: 14px">Amount of latest states combined:</p>
         <input type="number" id="quantity" v-model="diffAmount" min="1" max="25" width="100px"
-               style="max-width: 50px; margin-left: 20px">
+          style="max-width: 50px; margin-left: 20px">
       </div>
     </div>
     <div class="bottom-line-div"></div>
     <div id="playlist-view-div">
       <playlist-folder-arrangement :playlistsWithFolders="playlistData"
-                                   @open-playlist-detail-component="openPlaylistDetail"/>
+        @open-playlist-detail-component="openPlaylistDetail" />
     </div>
   </div>
 </template>
@@ -24,12 +24,13 @@ export default {
     PlaylistFolderArrangement
   },
   props: {
-    latestPlaylistState: Object,
+    accessToken: String
   },
   data() {
     return {
       title: 'Playlist diff - Newly fetched tracks from Spotify state',
       playlistData: {},
+      latestPlaylistState: {},
       diffAmount: 5,
 
       backendHost: import.meta.env.VITE_BACKEND_HOST,
@@ -37,7 +38,8 @@ export default {
     };
   },
   async created() {
-    await this.getLatestDiffs()
+    await this.getLatestPlaylistState();
+    await this.getLatestDiffs();
   },
   watch: {
     diffAmount(newValue) {
@@ -86,7 +88,23 @@ export default {
         }
       }
       this.playlistData = newPlaylistData;
-      console.log(this.playlistData)
+    },
+    async getLatestPlaylistState() {
+      const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/latest_playlist_states?amount=1`)
+      let newPlaylistData = {};
+      const playlists = response[0]['playlists']
+
+      for (const playlistId in playlists) {
+        const folder = playlists[playlistId]['folder']
+        if (!newPlaylistData.hasOwnProperty(folder)) {
+          newPlaylistData[folder] = {}
+        }
+
+        const name = playlists[playlistId]['name']
+        const trackString = playlists[playlistId]['track_ids'].join(",")
+        newPlaylistData[folder][name] = [];
+      }
+      this.latestPlaylistState = newPlaylistData;
     },
     async openPlaylistDetail(playlistName) {
       const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/latest_playlist_states?amount=${1}`)
@@ -100,14 +118,17 @@ export default {
     },
     async fetchData(url) {
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`
+          }
+        });
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          throw new Error(`Error when requesting data. Status code: ${response.status}`);
         }
-
         return await response.json();
       } catch (error) {
-        console.error('Error fetching data:', error.message);
+        alert(error.message)
         throw error;
       }
     },

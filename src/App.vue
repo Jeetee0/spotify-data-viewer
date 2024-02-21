@@ -9,37 +9,45 @@
 
           <h2 style="font-weight: bold;">Spotify Library Management</h2>
         </div>
-        <div id="navigation-buttons-div" :class="{ 'disabled': isContentDisabled }">
+        <button v-if="showLoginButton" @click="login">Login
+        </button>
+        <div v-if="!showLoginButton" id="navigation-buttons-div" :class="{ 'disabled': isContentDisabled }">
           <h3 style="font-weight: bold; padding-left: 6px;">General</h3>
           <button @click="showArtistAndGenreComponent" :disabled="showArtistAndGenre">Lookup</button>
           <button @click="showDiscoverComponent" :disabled="showDiscover">Discover</button>
           <button @click="showImportComponent" :disabled="showImport">Import</button>
+          <button @click="showSpotifyUserData" :disabled="showUserData">Spotify user data</button>
 
           <div style="height: 50px;"></div>
 
           <h3 style="font-weight: bold; padding-left: 6px;">KE Spotify Data</h3>
-          <button @click="showDiffComponent" :disabled="showDiff">Playlist Diff</button>
-          <button @click="showLatestPlaylistState" :disabled="showPlaylistState">Playlist State</button>
-          <button @click="showPlaylistDetailComponent" :disabled="showPlaylistDetail">Playlist Detail</button>
-          <button @click="showSpotifyUserData" :disabled="showUserData">Spotify user data</button>
+          <div :class="{ 'disabled': isNotOwner }">
+            <button @click="showDiffComponent" :disabled="showDiff">Playlist Diff</button>
+            <button @click="showLatestPlaylistState" :disabled="showPlaylistState">Playlist State</button>
+            <button @click="showPlaylistDetailComponent" :disabled="showPlaylistDetail">Playlist Detail</button>
+            <button @click="exportSpotifyState" :disabled="disabledExport">Export current State</button>
+          </div>
 
-          <button @click="exportSpotifyState" :disabled="disabledExport"
-            style="position: absolute; bottom: 0; margin: 15px 5px">Export current State
-          </button>
+
+
+
         </div>
+
       </div>
       <main>
         <EntryPage v-if="showInfoText"></EntryPage>
 
-        <DiffState v-if="showDiff" :latestPlaylistState="latestPlaylistState"
-          @open-playlist-detail-component-in-app="showPlaylistDetailComponent"></DiffState>
-        <PlaylistState v-if="showPlaylistState" :latestPlaylistState="latestPlaylistState"
-          @open-playlist-detail-component-in-app="showPlaylistDetailComponent"></PlaylistState>
-        <UserData v-if="showUserData"></UserData>
-        <PlaylistDetail v-if="showPlaylistDetail" :playlistIdInit=this.selectedPlaylistId></PlaylistDetail>
         <Lookup v-if="showArtistAndGenre" :tracks="tracks" :artists="artists" :genres="genres"></Lookup>
         <Discover v-if="showDiscover" :tracks="tracks" :artists="artists" :genres="genres"></Discover>
         <Import v-if="showImport"></Import>
+        <UserData v-if="showUserData" :accessToken="accessToken"></UserData>
+
+        <DiffState v-if="showDiff" @open-playlist-detail-component-in-app="showPlaylistDetailComponent"
+          :accessToken="accessToken"></DiffState>
+        <PlaylistState v-if="showPlaylistState" @open-playlist-detail-component-in-app="showPlaylistDetailComponent"
+          :accessToken="accessToken"></PlaylistState>
+        <PlaylistDetail v-if="showPlaylistDetail" :playlistIdInit=this.selectedPlaylistId></PlaylistDetail>
+
       </main>
     </div>
   </div>
@@ -59,7 +67,9 @@ export default {
   name: "App",
   data() {
     return {
+      accessToken: "",
       isContentDisabled: true,
+      isNotOwner: true,
 
       showInfoText: true,
       showDiff: false,
@@ -71,6 +81,7 @@ export default {
       showDiscover: false,
       showImport: false,
       selectedPlaylistId: "",
+      showLoginButton: true,
 
       tracks: [],
       artists: [],
@@ -92,45 +103,55 @@ export default {
     EntryPage,
     EntryPage
   },
+  async mounted() {
+  },
   async created() {
-    this.tracks = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/tracks`)
-    const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/artists_and_genres`)
-    this.genres = response.genres;
-    this.artists = response.artists;
-    await this.getLatestPlaylistState()
-    this.isContentDisabled = false;
+    const params = (new URL(document.location)).searchParams;
+    const token = params.get('token');
+    const userId = params.get('user_id');
+    if (token !== null && this.tokenIsStillValid(params)) {
+      this.requestInitialData();
+      this.showLoginButton = false;
+      this.accessToken = token;
+      if (userId === "jeetee0") {
+        this.isNotOwner = false;
+      }
+    }
   },
   methods: {
-    async fetchData(url) {
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        return await response.json();
-      } catch (error) {
-        console.error('Error fetching data:', error.message);
-        throw error;
+    tokenIsStillValid(queryParams) {
+      const expiryDateString = queryParams.get('expiry_date');
+      if (expiryDateString == null || expiryDateString == "")
+        return false;
+      const expiryDate = new Date(Date.parse(expiryDateString));
+      if (expiryDate > new Date()) {
+        return true;
+      } else {
+        return false;
       }
     },
-    async getLatestPlaylistState() {
-      const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/latest_playlist_states?amount=1`)
-      let newPlaylistData = {};
-      const playlists = response[0]['playlists']
-      this.playlists = playlists
-
-      for (const playlistId in playlists) {
-        const folder = playlists[playlistId]['folder']
-        if (!newPlaylistData.hasOwnProperty(folder)) {
-          newPlaylistData[folder] = {}
+    async requestInitialData() {
+      this.tracks = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/tracks`)
+      const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/artists_and_genres`)
+      this.genres = response.genres;
+      this.artists = response.artists;
+      this.isContentDisabled = false;
+    },
+    async fetchData(url) {
+      try {
+        const response = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error(`Error when requesting data. Status code: ${response.status}`);
         }
-
-        const name = playlists[playlistId]['name']
-        const trackString = playlists[playlistId]['track_ids'].join(",")
-        newPlaylistData[folder][name] = await this.getSpotifyTracksByIdList(trackString);
+        return await response.json();
+      } catch (error) {
+        alert(error.message)
+        throw error;
       }
-      this.latestPlaylistState = newPlaylistData;
     },
     async getSpotifyTracksByIdList(track_ids) {
       return await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/tracks_by_ids?ids=${track_ids}`)
@@ -216,25 +237,18 @@ export default {
       this.showDiscover = false;
       this.showImport = true;
     },
-    exportSpotifyState() {
+    async exportSpotifyState() {
       this.disabledExport = true;
-      const backendHost = import.meta.env.VITE_BACKEND_HOST;
-      const backendPort = import.meta.env.VITE_BACKEND_PORT;
-      try {
-        fetch(`${backendHost}:${backendPort}/spotify/trigger_complete_data_retrieval`, {
-          method: 'GET',
-          headers: {}
-        })
-          .then(response => {
-            response.json().then(res => alert(res));
-          })
-          .catch(err => {
-            console.error(err);
-          });
-      } catch (error) {
-        console.error("Error during exporting spotify state", error)
-      }
+      const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/trigger_complete_data_retrieval`)
+      alert(`${response.status} - amount of playlists: '${response.amount_of_playlists}', total_amount_of_tracks_in_playlists: '${response.total_amount_of_tracks_in_playlists}'`)
     },
+    login() {
+      try {
+        window.location.href = `${this.backendHost}:${this.backendPort}/spotify/request_access_token`;
+      } catch (error) {
+        console.error("Error during the OAuth process:", error);
+      }
+    }
   }
 }
 </script>

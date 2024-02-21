@@ -3,7 +3,7 @@
     <div id="input-container-div">
       <div id="left-side-div" style="padding: 5px 15px">
         <h1>{{ title }}</h1>
-        <div style="display: flex; flex-direction: row; align-content: center; ">
+        <div style="display: flex; flex-direction: row; align-content: center; margin-top: 5px;">
           <p style="font-size: 14px">Choose latest state:</p>
           <input type="number" id="quantity" v-model="stateAmount" min="1" max="100"
             style="margin-bottom: 15px; max-width: 50px; margin-left: 20px; margin-right: 20px">
@@ -11,7 +11,7 @@
           <input disabled="true" id="user-data-export-date" v-model="exportDate"
             style="margin-bottom: 15px; max-width: 100px; margin-left: 20px; margin-right: 20px; pointer-events: none;" />
         </div>
-        <div id="term-separation-div">
+        <div id="term-separation-div" style="margin-bottom: 35px; margin-top: 15px;">
           <button id="shortTermButton" @click="showShortTerm" :disabled="shortTerm">Short term</button>
           <button id="midTermButton" @click="showMidTerm" :disabled="midTerm">Mid term</button>
           <button id="longTermButton" @click="showLongTerm" :disabled="longTerm">Long term</button>
@@ -19,7 +19,8 @@
       </div>
       <div id="right-side-div" style="display: flex; flex-direction: row; align-items: center;">
         <div ref="spotifyPlayer" style="margin-top: 15px; margin-bottom: 10px;"></div>
-        <track-features style="padding: 15px 25px;" :trackFeatures="this.trackFeatures"></track-features>
+        <track-features v-if="showTrackFeatures" style="padding: 15px 25px;"
+          :trackFeatures="this.trackFeatures"></track-features>
       </div>
 
     </div>
@@ -55,6 +56,9 @@ import TrackFeatures from "./TrackFeatures.vue";
 
 export default {
   components: { ArtistArrangementView, TrackArrangementView, TrackFeatures },
+  props: {
+    accessToken: String
+  },
   data() {
     return {
       title: 'Spotify user data',
@@ -68,6 +72,7 @@ export default {
       midTerm: false,
       longTerm: false,
       trackFeatures: {},
+      showTrackFeatures: false,
 
       backendHost: import.meta.env.VITE_BACKEND_HOST,
       backendPort: import.meta.env.VITE_BACKEND_PORT,
@@ -77,6 +82,7 @@ export default {
     await this.requestUserData()
     this.followedArtists = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/followed_artists`)
     this.playTrack(this.termData.fav_tracks[0]);
+    this.showTrackFeatures = true;
 
   },
   watch: {
@@ -92,8 +98,10 @@ export default {
       this.trackFeatures = await this.fetchData(url);
     },
     async requestUserData() {
-      const index = this.stateAmount - 1;
+      var index = this.stateAmount - 1;
       const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/latest_user_data_states?amount=${this.stateAmount}`)
+      if (response.length == 1)
+        index = 0;
       this.exportDate = response[index]['created_at']['$date'].substring(0, 10)
       this.userData = response[index]['data']
 
@@ -112,30 +120,37 @@ export default {
       this.shortTerm = true;
       this.midTerm = false;
       this.longTerm = false;
-      await this.requestUserData()
+      this.termData = this.userData['short_term']
+      this.playTrack(this.termData.fav_tracks[0]);
     },
     async showMidTerm() {
       this.shortTerm = false;
       this.midTerm = true;
       this.longTerm = false;
-      await this.requestUserData()
+      this.termData = this.userData['mid_term']
+      this.playTrack(this.termData.fav_tracks[0]);
     },
     async showLongTerm() {
       this.shortTerm = false;
       this.midTerm = false;
       this.longTerm = true;
-      await this.requestUserData()
+      this.termData = this.userData['long_term']
+      this.playTrack(this.termData.fav_tracks[0]);
     },
     async fetchData(url) {
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`
+          },
+        });
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          throw new Error(`Error when requesting data. Status code: ${response.status}`);
         }
-
         return await response.json();
       } catch (error) {
-        console.error('Error fetching data:', error.message);
+        alert(error.message)
         throw error;
       }
     },
@@ -175,7 +190,7 @@ export default {
 }
 
 button {
-  height: 50px;
+  height: 80px;
   width: 150px;
   font-size: 18px;
   display: block;

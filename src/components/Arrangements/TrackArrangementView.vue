@@ -110,7 +110,7 @@ export default {
 .track-div {
   width: 200px;
   margin: 5px 0px;
-  padding: 0px 15px;
+  padding: 10px 15px;
   font-size: 12px;
   display: flex;
   flex-direction: column;

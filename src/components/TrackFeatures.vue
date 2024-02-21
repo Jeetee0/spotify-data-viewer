@@ -7,7 +7,7 @@
         <p style="font-weight: bold;">ID:</p>
         <p style="font-weight: bold;">Length:</p>
       </div>
-      <div style="padding-left: 5px;">
+      <div style="padding-left: 40px;">
         <p>{{ trackFeatures.id }}</p>
         <p>{{ this.millisToMinutesAndSeconds(trackFeatures.duration_ms) }} mins</p>
       </div>
@@ -47,7 +47,6 @@
 
     </div>
   </div>
-
 </template>
 
 <script>

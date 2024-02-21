@@ -207,7 +207,7 @@ export default {
           matched_artists.push(artist)
         }
       }
-      this.artistsForGenre = matched_artists
+      this.artistsForGenre = matched_artists.sort((a, b) => b.popularity - a.popularity)
 
 
     },
@@ -215,12 +215,11 @@ export default {
       try {
         const response = await fetch(url);
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          throw new Error(`Error when requesting data. Status code: ${response.status}`);
         }
-
         return await response.json();
       } catch (error) {
-        console.error('Error fetching data:', error.message);
+        alert(error.message)
         throw error;
       }
     },

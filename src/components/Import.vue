@@ -2,7 +2,7 @@
 <template>
     <div style="font-weight: bold; color: black; padding-left: 15px; padding-bottom: 10px;">
         <h1>Search for spotify data and import into the local library</h1>
-        <input v-model="searchTerm" placeholder="Search for artist, track or playlist name"
+        <input v-model="searchTerm" placeholder="Search for artist, track or playlist name" @keyup.enter="searchInSpotify"
             style="width: 290px; height: 40px; font-size: 16px; border-radius: 4px; padding: 2px 7px; margin-top: 10px;" />
         <button style="width: 80px; height: 40px; margin-left: 10px; font-size: 18px;"
             @click="searchInSpotify">Search</button>
@@ -27,6 +27,8 @@
         </playlist-import-view>
 
     </div>
+
+    <popup :showPopup="showPopup" :infoText="popupInfoText"></popup>
 </template>
   
 <script>
@@ -34,9 +36,10 @@ import ArtistArrangementView from "@/components/Arrangements/ArtistArrangementVi
 import TrackArrangementView from '@/components/Arrangements/TrackArrangementView.vue';
 import TrackFeatures from "@/components/TrackFeatures.vue";
 import PlaylistImportView from "@/components/Arrangements/PlaylistImportView.vue";
+import Popup from "@/components/Popup.vue"
 
 export default {
-    components: { TrackFeatures, ArtistArrangementView, TrackArrangementView, PlaylistImportView },
+    components: { TrackFeatures, ArtistArrangementView, TrackArrangementView, PlaylistImportView, Popup },
     data() {
         return {
             searchTerm: "",
@@ -47,6 +50,9 @@ export default {
             typeTrackSelected: true,
             typeArtistSelected: false,
             typePlaylistSelected: false,
+
+            popupInfoText: "",
+            showPopup: false,
 
             backendHost: import.meta.env.VITE_BACKEND_HOST,
             backendPort: import.meta.env.VITE_BACKEND_PORT,
@@ -63,7 +69,6 @@ export default {
             else type = "playlist"
 
             const results = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/general_search?term=${this.searchTerm}&type=${type}`)
-            console.log(results)
 
             if (this.typeTrackSelected) this.tracks = results
             else if (this.typeArtistSelected) this.artists = results
@@ -74,12 +79,11 @@ export default {
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    throw new Error(`Error when requesting data. Status code: ${response.status}`);
                 }
-
                 return await response.json();
             } catch (error) {
-                console.error('Error fetching data:', error.message);
+                alert(error.message)
                 throw error;
             }
         },
@@ -90,12 +94,11 @@ export default {
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    throw new Error(`Error when requesting data. Status code: ${response.status}`);
                 }
-
                 return await response.json();
             } catch (error) {
-                console.error('Error fetching data:', error.message);
+                alert(error.message)
                 throw error;
             }
         },
@@ -117,18 +120,25 @@ export default {
         async importTrackClicked(track) {
             const url = `${this.backendHost}:${this.backendPort}/spotify/import_item?id=${track.id}&type=track`
             const response = await this.fetchDataPost(url)
-            alert(response)
+            this.triggerPopup(response.detail)
         },
         async importArtistClicked(artist) {
             const url = `${this.backendHost}:${this.backendPort}/spotify/import_item?id=${artist.id}&type=artist`
             const response = await this.fetchDataPost(url)
-            alert(response)
+            this.triggerPopup(response.detail)
         },
         async importPlaylistClicked(playlistId) {
             const url = `${this.backendHost}:${this.backendPort}/spotify/import_item?id=${playlistId}&type=playlist`
             const response = await this.fetchDataPost(url)
-            alert(response)
+            this.triggerPopup(response.detail)
         },
+        triggerPopup(infoText) {
+            this.popupInfoText = infoText;
+            this.showPopup = true;
+            setTimeout(() => {
+                this.showPopup = false;
+            }, 5000);
+        }
     }
 };
 </script>
