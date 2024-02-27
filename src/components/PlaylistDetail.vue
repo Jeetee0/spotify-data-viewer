@@ -15,6 +15,7 @@
         <div id="columns-div">
           <div style="padding: 10px">
             <a :href="playlist.spotify_url" target="_blank"><img :src="playlist.image_url" alt="Playlist Cover"
+                @mouseover="handlePlaylistMouseOver(true)" @mouseout="handlePlaylistMouseOver(false)"
                 style="height: 200px; width: 200px; border-radius: 15px"></a>
           </div>
           <div style="padding: 10px; max-width: 400px">
@@ -55,20 +56,25 @@
     <div v-if="playlistFound" class="bottom-line-div"></div>
     <div v-if="playlistFound" style="padding: 5px 15px;">
       <h2 style="font-weight: bold; padding-bottom: 5px;">Tracks</h2>
-      <track-arrangement-view :tracks="this.trackList"></track-arrangement-view>
+      <track-arrangement-view :tracks="this.trackList" popupInfoText="Open track in Spotify"
+        @track-clicked="openTrackInSpotify"></track-arrangement-view>
     </div>
     <p v-if="error">{{ error }}</p>
   </div>
+
+  <popup :showPopup="showInfoPopup" :infoText="popupInfoText"></popup>
 </template>
 
 <script>
 import PlaylistView from "@/components/Arrangements/PlaylistArrangementView.vue";
 import TrackArrangementView from "@/components/Arrangements/TrackArrangementView.vue";
+import Popup from '@/components/Popup.vue'
 
 export default {
   components: {
     TrackArrangementView,
-    PlaylistView
+    PlaylistView,
+    Popup
   },
   props: {
     playlistIdInit: {
@@ -84,6 +90,9 @@ export default {
       playlist: null,
       trackList: null,
       error: null,
+
+      showInfoPopup: false,
+      popupInfoText: "Open playlist in Spotify",
 
       backendHost: import.meta.env.VITE_BACKEND_HOST,
       backendPort: import.meta.env.VITE_BACKEND_PORT,
@@ -103,27 +112,20 @@ export default {
       if (this.playlistId === "")
         return;
 
-      try {
-        const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/playlists_by_ids?ids=${this.playlistId}`);
+      const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/playlists_by_ids?ids=${this.playlistId}`);
+      this.playlist = response[0];
 
-        // Update the component's data with the fetched playlist
-        this.playlist = response[0];
-
-        // create track view component
-        this.trackList = {};
-        const trackIdsInPlaylist = this.playlist['track_ids'];
-        let trackString = "";
-        for (const spot_id in trackIdsInPlaylist) {
-          trackString += trackIdsInPlaylist[spot_id] + ","
-        }
-        trackString = trackString.slice(0, -1);
-        this.trackList = await this.getSpotifyTracksByIdList(trackString);
-        this.playlistFound = true;
-      } catch (error) {
-        // Handle any fetch errors
-        this.error = 'Error fetching playlist data. Please check the ID and try again.';
-        console.log(error)
+      // create track view component
+      this.trackList = {};
+      const trackIdsInPlaylist = this.playlist['track_ids'];
+      let trackString = "";
+      for (const spot_id in trackIdsInPlaylist) {
+        trackString += trackIdsInPlaylist[spot_id] + ","
       }
+      trackString = trackString.slice(0, -1);
+      this.trackList = await this.getSpotifyTracksByIdList(trackString);
+      console.log(this.trackList.length)
+      this.playlistFound = true;
     },
     async fetchData(url) {
       try {
@@ -143,6 +145,12 @@ export default {
     getArtistsNames(artists) {
       return artists.map(artist => artist.name).join(', ');
     },
+    handlePlaylistMouseOver(value) {
+      this.showInfoPopup = value;
+    },
+    openTrackInSpotify(track) {
+      window.open(track.spotify_url)
+    }
   }
 }
 </script>

@@ -43,7 +43,7 @@
     <div>
       <h1 style="padding: 5px 15px;">Followed artists</h1>
       <artist-arrangement-view style="padding: 5px 15px;" :artists="this.followedArtists"
-        @open-artist-view="selectArtist"></artist-arrangement-view>
+        @artist-clicked="selectArtist"></artist-arrangement-view>
     </div>
 
   </div>

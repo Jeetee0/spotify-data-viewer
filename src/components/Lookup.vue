@@ -15,6 +15,7 @@
       <div id="selected-track-div" v-if="trackSelected">
         <div id="track-basic-info-div" style="padding: 10px 15px">
           <a :href="trackSelected.spotify_url" target="_blank"><img :src="trackSelected.image_url" alt="Album Cover"
+              @mouseover="handleTrackMouseOver(true)" @mouseout="handleTrackMouseOver(false)"
               style="height: 150px; width: 150px; border-radius: 15px"></a>
           <h3><span style="font-weight: bold;">{{ trackSelected.name }}</span></h3>
           <h4 style="margin-bottom: 15px">{{ trackSelected.artists.map(artist => artist.name).join(', ') }}</h4>
@@ -25,7 +26,7 @@
         <div style="padding: 15px 15px">
           <h2>Artists for track:</h2>
           <artist-arrangement-view style="padding: 5px 15px;" :artists="this.artistsForTrack"
-            @open-artist-view="selectArtist"></artist-arrangement-view>
+            @artist-clicked="selectArtist"></artist-arrangement-view>
         </div>
       </div>
     </div>
@@ -44,6 +45,7 @@
         <div v-if="showSingleArtist" style="width: 320px; padding-top: 15px;">
           <h2 style="font-weight: bold">{{ selectedArtist.name }}</h2>
           <a :href="selectedArtist.spotify_url" target="_blank"><img :src="selectedArtist.image_url" alt="Album Cover"
+              @mouseover="handleArtistMouseOver(true)" @mouseout="handleArtistMouseOver(false)"
               style="height: 200px; width: 200px; border-radius: 15px"></a>
 
           <div class="row-div" style="max-width: 220px;">
@@ -65,10 +67,10 @@
       <div v-if="chosenArtist" style="padding-left: 15px;">
         <h2 style="">Artist Top Tracks</h2>
         <track-arrangement-view :tracks="Object.fromEntries(Object.entries(artistTracks).slice(0, 5))"
-          @track-clicked="trackClicked"></track-arrangement-view>
+          popupInfoText="Get track info" @track-clicked="trackClicked"></track-arrangement-view>
         <h2 style="">Similar Artists</h2>
         <artist-arrangement-view :artists="Object.fromEntries(Object.entries(relatedArtists).slice(0, 5))"
-          @open-artist-view="selectArtist"></artist-arrangement-view>
+          @artist-clicked="selectArtist"></artist-arrangement-view>
       </div>
 
       <br>
@@ -83,11 +85,11 @@
         <h4>Select a spotify genre ({{ genres.length }}):</h4>
         <input v-model="genreFilter" placeholder="Type to filter genre" style="width: 250px;" /><br>
         <select v-model="selectedGenre" id="genreSelect" name="genre" style="width: 250px; height: 30px;">
-          <option v-for="genre in filteredGenres" :key="genre" :value="genre">{{ genre }}</option>
+          <option v-for="   genre    in    filteredGenres   " :key="genre" :value="genre">{{ genre }}</option>
         </select>
       </div>
 
-      <artist-arrangement-view :artists="artistsForGenre" @open-artist-view="selectArtist"></artist-arrangement-view>
+      <artist-arrangement-view :artists="artistsForGenre" @artist-clicked="selectArtist"></artist-arrangement-view>
 
     </div>
 
@@ -96,27 +98,30 @@
     <div style="padding: 10px 15px;">
       <h1>Artists with highest popularity</h1>
       <artist-arrangement-view :artists="highestPopularityArtists"
-        @open-artist-view="selectArtist"></artist-arrangement-view>
+        @artist-clicked="selectArtist"></artist-arrangement-view>
     </div>
 
     <div class="bottom-line-div"></div>
 
     <div style="padding: 10px 15px;">
       <h1>Artists with most followers</h1>
-      <artist-arrangement-view :artists="mostFollowersArtists" @open-artist-view="selectArtist"></artist-arrangement-view>
+      <artist-arrangement-view :artists="mostFollowersArtists" @artist-clicked="selectArtist"></artist-arrangement-view>
     </div>
 
 
   </div>
+
+  <popup :showPopup="showInfoPopup" :infoText="popupInfoText"></popup>
 </template>
 
 <script>
 import ArtistArrangementView from "@/components/Arrangements/ArtistArrangementView.vue";
 import TrackArrangementView from '@/components/Arrangements/TrackArrangementView.vue';
 import TrackFeatures from "@/components/TrackFeatures.vue";
+import Popup from '@/components/Popup.vue'
 
 export default {
-  components: { TrackFeatures, ArtistArrangementView, TrackArrangementView, ArtistArrangementView },
+  components: { TrackFeatures, ArtistArrangementView, TrackArrangementView, ArtistArrangementView, Popup },
   props: {
     tracks: Object,
     genres: Object,
@@ -142,6 +147,9 @@ export default {
       showSingleArtist: false,
       chosenArtist: null,
       selectedArtist: null,
+
+      showInfoPopup: false,
+      popupInfoText: "",
 
       backendHost: import.meta.env.VITE_BACKEND_HOST,
       backendPort: import.meta.env.VITE_BACKEND_PORT,
@@ -222,6 +230,14 @@ export default {
         alert(error.message)
         throw error;
       }
+    },
+    handleTrackMouseOver(value) {
+      this.popupInfoText = "Open track in Spotify"
+      this.showInfoPopup = value;
+    },
+    handleArtistMouseOver(value) {
+      this.popupInfoText = "Open artist in Spotify"
+      this.showInfoPopup = value;
     },
   }
 }

@@ -240,11 +240,11 @@ export default {
     async exportSpotifyState() {
       this.disabledExport = true;
       const response = await this.fetchData(`${this.backendHost}:${this.backendPort}/spotify/trigger_complete_data_retrieval`)
-      alert(`${response.status} - amount of playlists: '${response.amount_of_playlists}', total_amount_of_tracks_in_playlists: '${response.total_amount_of_tracks_in_playlists}'`)
+      alert(`Export Status: ${response.status}\nAmount of playlists: '${response.amount_of_playlists}'\nTotal amount of tracks in all playlists: '${response.total_amount_of_tracks_in_playlists}'`)
     },
     login() {
       try {
-        window.location.href = `${this.backendHost}:${this.backendPort}/spotify/request_access_token`;
+        window.location.href = `${this.backendHost}:${this.backendPort}/spotify/request_access_token?source=frontend`;
       } catch (error) {
         console.error("Error during the OAuth process:", error);
       }

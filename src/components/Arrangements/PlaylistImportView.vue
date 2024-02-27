@@ -4,7 +4,8 @@
             style="padding: 10px 20px; justify-content: center; display: flex; flex-direction: column;">
             <div>
                 <a :href="playlist.external_urls.spotify" target="_blank"><img class="playlist-image"
-                        :src="playlist.images[0].url" alt="Playlist Cover"></a>
+                        :src="playlist.images[0].url" alt="Playlist Cover" @mouseover="handlePlaylistMouseOver(true)"
+                        @mouseout="handlePlaylistMouseOver(false)"></a>
                 <h2 style="font-weight: bold">{{ playlist.name }} </h2>
                 <p><span style="font-weight: bold;">ID:</span> {{ playlist.id }}</p>
                 <p><span style="font-weight: bold;">Owner:</span> {{ playlist.owner.display_name }}</p>
@@ -16,20 +17,31 @@
             <button id="importButton" @click="importPlaylist(playlist.id)">Import</button>
         </div>
     </div>
+
+    <popup :showPopup="showPlaylistInfoPopup" :infoText="popupInfoText"></popup>
 </template>
   
 <script>
+import Popup from '@/components/Popup.vue'
+
 export default {
+    components: { Popup },
     props: {
         playlists: Object,
         importButton: {
             type: Boolean,
             required: false,
             default: false
+        },
+        popupInfoText: {
+            type: String,
+            required: false,
+            default: "Open Playlist in Spotify"
         }
     },
     data() {
         return {
+            showPlaylistInfoPopup: false,
         }
     },
     methods: {
@@ -41,7 +53,18 @@ export default {
         },
         importPlaylist(playlistId) {
             this.$emit('import-playlist-clicked', playlistId)
-        }
+        },
+        handlePlaylistMouseOver(value) {
+            if (this.popupInfoText !== "") {
+                if (value) {
+                    document.body.style.cursor = "pointer";
+                }
+                else {
+                    document.body.style.cursor = "auto";
+                }
+                this.showPlaylistInfoPopup = value;
+            }
+        },
     }
 }
 </script>

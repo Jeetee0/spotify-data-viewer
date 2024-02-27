@@ -19,9 +19,11 @@
     <div id="results-div">
         <h2 style="font-weight: bold;">Results</h2>
         <track-arrangement-view v-if="typeTrackSelected" :tracks="this.tracks" :importButton="true"
-            @import-track-clicked="importTrackClicked" @track-clicked="trackClicked"></track-arrangement-view>
+            popupInfoText="Open track in Spotify" @import-track-clicked="importTrackClicked"
+            @track-clicked="openTrackInSpotify"></track-arrangement-view>
         <artist-arrangement-view v-if="typeArtistSelected" :artists="this.artists" :importButton="true"
-            @import-artist-clicked="importArtistClicked" @open-artist-view="selectArtist"></artist-arrangement-view>
+            popupInfoText="Open artist in Spotify" @import-artist-clicked="importArtistClicked"
+            @artist-clicked="openArtistInSpotify"></artist-arrangement-view>
         <playlist-import-view v-if="typePlaylistSelected" :playlists="this.playlists" :importButton="true"
             @import-playlist-clicked="importPlaylistClicked">
         </playlist-import-view>
@@ -138,6 +140,12 @@ export default {
             setTimeout(() => {
                 this.showPopup = false;
             }, 5000);
+        },
+        openArtistInSpotify(artist) {
+            window.open(artist.spotify_url)
+        },
+        openTrackInSpotify(track) {
+            window.open(track.spotify_url)
         }
     }
 };

@@ -2,7 +2,8 @@
   <div id="artist-arrangement-div">
     <div class="artist-div" v-for="artist in this.artists" :key="artist.id">
       <div>
-        <img class="artist-image" :src="artist.image_url" @click="selectArtist(artist)" alt="Album Cover">
+        <img class="artist-image" :src="artist.image_url" @click="selectArtist(artist)" alt="Album Cover"
+          @mouseover="handleArtistMouseHover(true)" @mouseout="handleArtistMouseHover(false)">
         <h2 style="font-weight: bold">{{ artist.name }}</h2>
         <h3><span style="font-weight: bold;">Popularity:</span> {{ artist.popularity }}/100</h3>
         <h3><span style="font-weight: bold;">Followers:</span> {{
@@ -13,25 +14,36 @@
       <button id="importButton" v-if="importButton" @click="importArtist(artist)">Import</button>
     </div>
   </div>
+
+  <popup :showPopup="showArtistInfoPopup" :infoText="popupInfoText"></popup>
 </template>
 
 <script>
+import Popup from '@/components/Popup.vue'
+
 export default {
+  components: { Popup },
   props: {
     artists: Object,
     importButton: {
       type: Boolean,
       required: false,
       default: false
+    },
+    popupInfoText: {
+      type: String,
+      required: false,
+      default: "Get artist info"
     }
   },
   data() {
     return {
+      showArtistInfoPopup: false,
     }
   },
   methods: {
     selectArtist(artist) {
-      this.$emit('open-artist-view', artist)
+      this.$emit('artist-clicked', artist)
     },
     sliceString(input) {
       if (input.length <= 50)
@@ -41,7 +53,10 @@ export default {
     },
     importArtist(artist) {
       this.$emit('import-artist-clicked', artist)
-    }
+    },
+    handleArtistMouseHover(value) {
+      this.showArtistInfoPopup = value;
+    },
   }
 }
 </script>
